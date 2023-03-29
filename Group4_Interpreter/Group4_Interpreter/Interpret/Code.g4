@@ -14,7 +14,7 @@ programLines
 
 variableInitialization: programDataTypes IDENTIFIERS (',' IDENTIFIERS)* ('=' expression)? NEWLINE?;
 variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
-assignmentOperator: programDataTypes IDENTIFIERS '=' expression NEWLINE?;
+assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
 
 beginBlocks: (BEGIN_CODE | BEGIN_IF | BEGIN_WHILE);
 

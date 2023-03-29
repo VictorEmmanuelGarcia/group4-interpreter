@@ -91,63 +91,12 @@ namespace Group4_Interpreter.Visit
             var dataType = context.programDataTypes().GetText();
             var variableName = context.IDENTIFIERS().GetText();
             var variableValue = Visit(context.expression());
-            if (variableValue != null)
-            {
-                if (dataType == "INT")
-                {
-                    if (int.TryParse(variableValue.ToString(), out int value))
-                    {
-                        Variables.Add(variableName, value);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Variable {variableName} is not an integer.");
-                    }
-                }
-                else if (dataType == "FLOAT")
-                {
-                    if (float.TryParse(variableValue.ToString(), out float value))
-                    {
-                        Variables.Add(variableName, value);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Variable {variableName} is not a float.");
-                    }
-                }
-                else if (dataType == "STRING")
-                {
-                    if (variableValue is string)
-                    {
-                        Variables.Add(variableName, variableValue);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Variable {variableName} is not a string.");
-                    }
-                }
-                else if (dataType == "BOOL")
-                {
-                    if (bool.TryParse(variableValue.ToString(), out bool value))
-                    {
-                        Variables.Add(variableName, value);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Variable {variableName} is not a boolean.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"Variable {variableName} is not a valid data type.");
-                }
-            }
+            
             return null;
         }
 
         public override object? VisitAssignmentOperator([NotNull] CodeParser.AssignmentOperatorContext context)
         {
-            var dataType = context.programDataTypes().GetText();
             var variableName = context.IDENTIFIERS().GetText();
             var variableValue = Visit(context.expression());
 
