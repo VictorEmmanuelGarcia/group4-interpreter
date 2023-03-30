@@ -100,45 +100,25 @@ namespace Group4_Interpreter.Visit
                 {
                     if (type.Equals("INT"))
                     {
-                        if (int.TryParse(varValue.ToString(), out int intValue))
-                        {
-                            Variables[varName[i]] = intValue;
-                        }
-                        else
-                        {
-                            int value;
-                            bool success = int.TryParse(varValue.ToString(), out value);
-                            if (!success)
-                            {
-                                Console.WriteLine($"Invalid value for integer variable '{varName}'");
-                            }
-                        }
+                           Variables[varName[i]] = varValue;
                     }
                     else if (type.Equals("FLOAT"))
                     {
-                        if (float.TryParse(varValue.ToString(), out float floatValue))
-                            return Variables[varName[i]] = floatValue;
-                        else
-                            Console.WriteLine($"Invalid value for float variable '{varName}'");
+                           Variables[varName[i]] = varValue;
                     }
                     else if (type.Equals("BOOL"))
                     {
-                        if (bool.TryParse(varValue.ToString(), out bool boolValue))
-                            return Variables[varName[i]] = boolValue;
-                        else
-                            Console.WriteLine($"Invalid value for boolean variable '{varName}'");
+                        Variables[varName[i]] = varValue;
+
                     }
                     else if (type.Equals("CHAR"))
                     {
-                        var charValue = varValue.ToString();
-                        if (charValue?.Length == 3 && charValue[i] == '\'' && charValue[2] == '\'')
-                            return Variables[varName[i]] = charValue[1];
-                        else
-                            Console.WriteLine($"Invalid value for character variable '{varName}'");
+                        Variables[varName[i]] = varValue;
+
                     }
                     else if (type.Equals("STRING"))
                     {
-                        return Variables[varName[i]] = varValue.ToString();
+                        Variables[varName[i]] = varValue;
                     }
                     else
                     {
@@ -169,6 +149,31 @@ namespace Group4_Interpreter.Visit
 
             return Variables[variableName] = variableValue;
             //kuwang ug error handling pa
+        }
+
+        public override object? VisitConstantValueExpression([NotNull] CodeParser.ConstantValueExpressionContext context)
+        {
+            if (context.constantValues().INTEGER_VALUES() is { } a)
+            {
+                return int.Parse(a.GetText());
+            }
+            if (context.constantValues().FLOAT_VALUES() is { } b)
+            {
+                return float.Parse(b.GetText());
+            }
+            if (context.constantValues().CHARACTER_VALUES() is { } c)
+            {
+                return char.Parse(c.GetText());
+            }
+            if (context.constantValues().BOOLEAN_VALUES() is { } d)
+            {
+                return bool.Parse(d.GetText());
+            }
+            if (context.constantValues().STRING_VALUES() is { } e)
+            {
+                return e.GetText()[1..^1];
+            }
+            return null;
         }
 
         public override object VisitBeginBlocks([NotNull] CodeParser.BeginBlocksContext context)
