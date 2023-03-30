@@ -1,6 +1,6 @@
 ﻿grammar Code;
 
-programStructure: BEGIN_CODE NEWLINE programLines* NEWLINE END_CODE  EOF ;
+programStructure: BEGIN_CODE NEWLINE programLines* NEWLINE END_CODE ;
 
 programLines
     : variableInitialization
@@ -10,11 +10,13 @@ programLines
     | ifCondition 
     | whileLoop
     | display
-    | scanFunction;
+    | scanFunction
+	| COMMENTS
+    ;
 
 variableInitialization: programDataTypes IDENTIFIERS (',' IDENTIFIERS)* ('=' expression)? NEWLINE?;
 variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
-assignmentOperator: programDataTypes IDENTIFIERS '=' expression NEWLINE?;
+assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
 
 beginBlocks: (BEGIN_CODE | BEGIN_IF | BEGIN_WHILE);
 

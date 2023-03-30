@@ -2,6 +2,7 @@
 using Group4_Interpreter.Interpret;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
@@ -12,13 +13,13 @@ namespace Group4_Interpreter.Visit
 {
     public class Visitor : CodeBaseVisitor<object?>
     {
-        public Dictionary<string, object?> Variables { get; } = new();
+        public Dictionary<string, object?> Variables { get; } = new Dictionary<string, object?>();
         public override object? VisitProgramStructure([NotNull] CodeParser.ProgramStructureContext context)
         {
             string code = context.GetText().Trim();
             if (code.StartsWith("BEGIN CODE") && code.EndsWith("END CODE"))
             {
-                // Visit each statement in the code
+                //Visit each statement in the code
                 foreach (var linesContext in context.programLines())
                 {
                     VisitProgramLines(linesContext);
@@ -27,7 +28,7 @@ namespace Group4_Interpreter.Visit
             }
             else
             {
-                Console.WriteLine("Code must start with 'BEGIN CODE' and end with 'END CODE'.");
+                Console.WriteLine("Code must begin with 'BEGIN CODE' and end with 'END CODE'");
             }
 
             return null;
@@ -38,121 +39,141 @@ namespace Group4_Interpreter.Visit
             if (context.variableInitialization() != null)
             {
                 // Visit the variableInitialization context
-                VisitVariableInitialization(context.variableInitialization());
+                return VisitVariableInitialization(context.variableInitialization());
+            }
+            else if (context.variable() != null)
+            {
+                // Visit the variable context
+                return VisitVariable(context.variable());
             }
             else if (context.assignmentOperator() != null)
             {
                 // Visit the assignmentOperator context
-                VisitAssignmentOperator(context.assignmentOperator());
+                return VisitAssignmentOperator(context.assignmentOperator());
             }
             else if (context.methodCall() != null)
             {
                 // Visit the methodCall context
-                VisitMethodCall(context.methodCall());
+                return VisitMethodCall(context.methodCall());
             }
             else if (context.ifCondition() != null)
             {
                 // Visit the ifCondition context
-                VisitIfCondition(context.ifCondition());
+                return VisitIfCondition(context.ifCondition());
             }
             else if (context.whileLoop() != null)
             {
                 // Visit the whileLoop context
-                VisitWhileLoop(context.whileLoop());
+                return VisitWhileLoop(context.whileLoop());
             }
             else if (context.display() != null)
             {
                 // Visit the display context
-                VisitDisplay(context.display());
+               return VisitDisplay(context.display());
             }
             else if (context.scanFunction() != null)
             {
                 // Visit the scanFunction context
-                VisitScanFunction(context.scanFunction());
+                return VisitScanFunction(context.scanFunction());
             }
-
-            return null;
+            else
+            {
+                throw new Exception("Unknown program line");
+            }
+           
         }
 
         public override object? VisitVariableInitialization([NotNull] CodeParser.VariableInitializationContext context)
         {
-            var dataType = context.programDataTypes().GetText();
-            var variableName = context.IDENTIFIERS().Select(id => id.GetText()).ToArray();
-            var variableValue = Visit(context.expression());
-            foreach(var name in variableName)
+            var type = context.programDataTypes().GetText();
+            var varName = context.IDENTIFIERS().Select(x => x.GetText()).ToArray();
+
+            var varValue = Visit(context.expression());
+
+            for (int i = 0; i < varName.Length; i++)
             {
-                
+                if (Variables.ContainsKey(varName[i]))
+                {
+                    Console.WriteLine($"Variable '{varName}' is already defined!");
+                }
+                else
+                {
+                    if (type.Equals("INT"))
+                    {
+                           Variables[varName[i]] = varValue;
+                    }
+                    else if (type.Equals("FLOAT"))
+                    {
+                           Variables[varName[i]] = varValue;
+                    }
+                    else if (type.Equals("BOOL"))
+                    {
+                        Variables[varName[i]] = varValue;
+
+                    }
+                    else if (type.Equals("CHAR"))
+                    {
+                        Variables[varName[i]] = varValue;
+
+                    }
+                    else if (type.Equals("STRING"))
+                    {
+                        Variables[varName[i]] = varValue;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Invalid variable type '{type}'");
+                    }
+                }
+
             }
-            return base.VisitVariableInitialization(context);
+
+            return null;
         }
 
         public override object? VisitVariable([NotNull] CodeParser.VariableContext context)
         {
-            var dataType = context.programDataTypes().GetText();
+            var varDataType = VisitProgramDataTypes(context.programDataTypes());
             var variableName = context.IDENTIFIERS().GetText();
-            var variableValue = Visit(context.expression());
-            if (variableValue != null)
-            {
-                if (dataType == "INT")
-                {
-                    if (int.TryParse(variableValue.ToString(), out int value))
-                    {
-                        Variables.Add(variableName, value);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Variable {variableName} is not an integer.");
-                    }
-                }
-                else if (dataType == "FLOAT")
-                {
-                    if (float.TryParse(variableValue.ToString(), out float value))
-                    {
-                        Variables.Add(variableName, value);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Variable {variableName} is not a float.");
-                    }
-                }
-                else if (dataType == "STRING")
-                {
-                    if (variableValue is string)
-                    {
-                        Variables.Add(variableName, variableValue);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Variable {variableName} is not a string.");
-                    }
-                }
-                else if (dataType == "BOOL")
-                {
-                    if (bool.TryParse(variableValue.ToString(), out bool value))
-                    {
-                        Variables.Add(variableName, value);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Variable {variableName} is not a boolean.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine($"Variable {variableName} is not a valid data type.");
-                }
-            }
-            return null;
+            var varValue = VisitExpression(context.expression());
+
+                var convert = TypeDescriptor.GetConverter(varValue.GetType());
+                //var varValueWithType = convert.ConvertFrom(varValue?.ToString(, varDataType.GetType() ?? "");
+                return Variables[variableName] = varValue;
         }
 
         public override object? VisitAssignmentOperator([NotNull] CodeParser.AssignmentOperatorContext context)
         {
-            var dataType = context.programDataTypes().GetText();
             var variableName = context.IDENTIFIERS().GetText();
             var variableValue = Visit(context.expression());
 
             return Variables[variableName] = variableValue;
             //kuwang ug error handling pa
+        }
+
+        public override object? VisitConstantValueExpression([NotNull] CodeParser.ConstantValueExpressionContext context)
+        {
+            if (context.constantValues().INTEGER_VALUES() is { } a)
+            {
+                return int.Parse(a.GetText());
+            }
+            if (context.constantValues().FLOAT_VALUES() is { } b)
+            {
+                return float.Parse(b.GetText());
+            }
+            if (context.constantValues().CHARACTER_VALUES() is { } c)
+            {
+                return char.Parse(c.GetText());
+            }
+            if (context.constantValues().BOOLEAN_VALUES() is { } d)
+            {
+                return bool.Parse(d.GetText());
+            }
+            if (context.constantValues().STRING_VALUES() is { } e)
+            {
+                return e.GetText()[1..^1];
+            }
+            return null;
         }
 
         public override object VisitBeginBlocks([NotNull] CodeParser.BeginBlocksContext context)
@@ -186,7 +207,6 @@ namespace Group4_Interpreter.Visit
             foreach (var variable in Variables)
             {
                 Console.WriteLine("{0}", variable.Value);
-                break;
             }
             Console.WriteLine();
             return null;

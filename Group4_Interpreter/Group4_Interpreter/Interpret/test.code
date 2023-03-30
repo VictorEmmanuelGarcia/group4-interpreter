@@ -1,4 +1,5 @@
 BEGIN CODE
-INT x = 5
+INT z = 5
+FLOAT x = 1.5
 DISPLAY: x
 END CODE
