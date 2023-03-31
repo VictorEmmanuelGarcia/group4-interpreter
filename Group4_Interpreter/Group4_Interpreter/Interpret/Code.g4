@@ -18,7 +18,7 @@ variableInitialization: programDataTypes IDENTIFIERS (',' IDENTIFIERS)* ('=' exp
 variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
 assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
 
-beginBlocks: (BEGIN_CODE | BEGIN_IF | BEGIN_WHILE);
+beginBlocks: (BEGIN_IF | BEGIN_WHILE);
 
 BEGIN_CODE: 'BEGIN CODE' ;
 END_CODE: 'END CODE' ;
@@ -58,11 +58,13 @@ expression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
     | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
+    | expression concatVariable expression                      #concatExpression
     ; 
 
 multDivModOperators: '*' | '/' | '%' ;
 addSubConcatenatorOperators: '+' | '-' | '&' ;
 comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
+concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
 escapeCodeOpen: '[' ;
 escapeCodeClose: ']' ;

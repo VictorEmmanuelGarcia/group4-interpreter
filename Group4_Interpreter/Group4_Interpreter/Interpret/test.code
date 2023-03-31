@@ -1,5 +1,5 @@
 BEGIN CODE
 INT z = 5
 FLOAT x = 1.5
-DISPLAY: x
+DISPLAY: x z
 END CODE
