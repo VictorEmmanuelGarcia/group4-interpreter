@@ -163,7 +163,7 @@ namespace Group4_Interpreter.Visit
             }
             if (context.constantValues().CHARACTER_VALUES() is { } c)
             {
-                return char.Parse(c.GetText());
+                return char.Parse(c.GetText().Substring(1,1));
             }
             if (context.constantValues().BOOLEAN_VALUES() is { } d)
             {
@@ -189,6 +189,8 @@ namespace Group4_Interpreter.Visit
                     return typeof(int);
                 case "FLOAT":
                     return typeof(float);
+                case "CHAR":
+                    return typeof(char);
                 case "STRING":
                     return typeof(string);
                 case "BOOL":
@@ -211,7 +213,13 @@ namespace Group4_Interpreter.Visit
             Console.WriteLine();
             return null;
         }
-        
+        public override object? VisitConcatExpression([NotNull] CodeParser.ConcatExpressionContext context)
+        { 
+            var varLeft = Visit(context.expression(0)); 
+            var varRight = Visit(context.expression(1)); 
+            return $"{varLeft}{varRight}";
+        }
+
 
     }
 }
