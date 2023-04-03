@@ -1,5 +1,6 @@
 BEGIN CODE
-INT z = 5
-FLOAT x = 1.5
-DISPLAY: x z
+CHAR x = 'hi' 
+CHAR y = 'i'
+CHAR z = x & y
+DISPLAY: z
 END CODE
