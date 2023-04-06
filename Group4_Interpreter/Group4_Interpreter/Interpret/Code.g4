@@ -33,11 +33,12 @@ BEGIN_WHILE: 'BEGIN' 'WHILE' ;
 END_WHILE: 'END' 'WHILE' ;
 whileLoop: WHILE '(' expression ')' BEGIN_WHILE beginBlocks* END_WHILE ;
 
-programDataTypes: INT | FLOAT | BOOL | CHAR ;
+programDataTypes: INT | FLOAT | BOOL | CHAR | STRING ;
 INT: 'INT' ;
 FLOAT: 'FLOAT';
 CHAR: 'CHAR';
 BOOL: 'BOOL';
+STRING: 'STRING';
 
 constantValues: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUES | STRING_VALUES ;
 INTEGER_VALUES: [0-9]+ ;
@@ -73,7 +74,7 @@ LOGICAL_OPERATORS: 'AND' | 'OR' | 'NOT' ;
 
 // for DISPLAY: and SCAN:
 methodCall: IDENTIFIERS ':' (expression (',' expression)*)? ;
-display: NEWLINE? 'DISPLAY' ':' expression* ;
+display: NEWLINE? 'DISPLAY' ':' expression NEWLINE? ;
 
 // Not working
 SCAN: 'SCAN:';

@@ -51,21 +51,6 @@ namespace Group4_Interpreter.Visit
                 // Visit the assignmentOperator context
                 return VisitAssignmentOperator(context.assignmentOperator());
             }
-            else if (context.methodCall() != null)
-            {
-                // Visit the methodCall context
-                return VisitMethodCall(context.methodCall());
-            }
-            else if (context.ifCondition() != null)
-            {
-                // Visit the ifCondition context
-                return VisitIfCondition(context.ifCondition());
-            }
-            else if (context.whileLoop() != null)
-            {
-                // Visit the whileLoop context
-                return VisitWhileLoop(context.whileLoop());
-            }
             else if (context.display() != null)
             {
                 // Visit the display context
@@ -133,13 +118,20 @@ namespace Group4_Interpreter.Visit
 
         public override object? VisitVariable([NotNull] CodeParser.VariableContext context)
         {
-            var varDataType = VisitProgramDataTypes(context.programDataTypes());
-            var variableName = context.IDENTIFIERS().GetText();
-            var varValue = VisitExpression(context.expression());
+            var dataTypeObj = VisitProgramDataTypes(context.programDataTypes());
+            if (dataTypeObj is null)
+            {
+                throw new Exception("Invalid data type");
+            }
 
-                var convert = TypeDescriptor.GetConverter(varValue.GetType());
-                //var varValueWithType = convert.ConvertFrom(varValue?.ToString(, varDataType.GetType() ?? "");
-                return Variables[variableName] = varValue;
+            var dataType = (Type)dataTypeObj;
+            var variableName = context.IDENTIFIERS().GetText();
+            var variableValue = VisitExpression(context.expression());
+
+            var varValueWithType = Convert.ChangeType(variableValue, dataType);
+            Variables[variableName] = varValueWithType;
+
+            return varValueWithType;
         }
 
         public override object? VisitAssignmentOperator([NotNull] CodeParser.AssignmentOperatorContext context)
@@ -148,7 +140,6 @@ namespace Group4_Interpreter.Visit
             var variableValue = Visit(context.expression());
 
             return Variables[variableName] = variableValue;
-            //kuwang ug error handling pa
         }
 
         public override object? VisitConstantValueExpression([NotNull] CodeParser.ConstantValueExpressionContext context)
@@ -163,7 +154,7 @@ namespace Group4_Interpreter.Visit
             }
             if (context.constantValues().CHARACTER_VALUES() is { } c)
             {
-                return char.Parse(c.GetText());
+                return char.Parse(c.GetText().Substring(1, 1));
             }
             if (context.constantValues().BOOLEAN_VALUES() is { } d)
             {
@@ -176,11 +167,6 @@ namespace Group4_Interpreter.Visit
             return null;
         }
 
-        public override object VisitBeginBlocks([NotNull] CodeParser.BeginBlocksContext context)
-        {
-            return base.VisitBeginBlocks(context);
-        }
-
         public override object? VisitProgramDataTypes([NotNull] CodeParser.ProgramDataTypesContext context)
         {
             switch (context.GetText())
@@ -191,6 +177,8 @@ namespace Group4_Interpreter.Visit
                     return typeof(float);
                 case "STRING":
                     return typeof(string);
+                case "CHAR":
+                    return typeof(char);
                 case "BOOL":
                     return typeof(bool);
                 default:
@@ -204,14 +192,11 @@ namespace Group4_Interpreter.Visit
 
         public override object? VisitDisplay([NotNull] CodeParser.DisplayContext context)
         {
-            foreach (var variable in Variables)
-            {
-                Console.WriteLine("{0}", variable.Value);
-            }
-            Console.WriteLine();
+            var exp =  Visit(context.expression());
+            Console.Write(exp);
             return null;
         }
-        
+
 
     }
 }
