@@ -70,47 +70,45 @@ namespace Group4_Interpreter.Visit
 
         public override object? VisitVariableInitialization([NotNull] CodeParser.VariableInitializationContext context)
         {
-            var type = context.programDataTypes().GetText();
-            var varName = context.IDENTIFIERS().Select(x => x.GetText()).ToArray();
-
-            var varValue = Visit(context.expression());
-
-            for (int i = 0; i < varName.Length; i++)
+            // Map string type names to corresponding Type objects
+            var typeMap = new Dictionary<string, Type>()
             {
-                if (Variables.ContainsKey(varName[i]))
+                { "INT", typeof(int) },
+                { "FLOAT", typeof(float) },
+                { "BOOL", typeof(bool) },
+                { "CHAR", typeof(char) },
+                { "STRING", typeof(string) }
+            };
+
+            var typeStr = context.programDataTypes().GetText();
+            if (!typeMap.TryGetValue(typeStr, out var type))
+            {
+                Console.WriteLine($"Invalid variable type '{typeStr}'");
+                return null;
+            }
+
+            var varNames = context.IDENTIFIERS().Select(x => x.GetText()).ToArray();
+            object? varValue = null;
+            if (context.expression() != null)
+            {
+                varValue = Visit(context.expression());
+            }
+
+            foreach (var varName in varNames)
+            {
+                if (Variables.ContainsKey(varName))
                 {
                     Console.WriteLine($"Variable '{varName}' is already defined!");
                 }
                 else
                 {
-                    if (type.Equals("INT"))
+                    var convertedValue = varValue;
+                    if (varValue != null && type != varValue.GetType())
                     {
-                           Variables[varName[i]] = varValue;
+                        convertedValue = TypeDescriptor.GetConverter(type).ConvertFrom(varValue);
                     }
-                    else if (type.Equals("FLOAT"))
-                    {
-                           Variables[varName[i]] = varValue;
-                    }
-                    else if (type.Equals("BOOL"))
-                    {
-                        Variables[varName[i]] = varValue;
-
-                    }
-                    else if (type.Equals("CHAR"))
-                    {
-                        Variables[varName[i]] = varValue;
-
-                    }
-                    else if (type.Equals("STRING"))
-                    {
-                        Variables[varName[i]] = varValue;
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Invalid variable type '{type}'");
-                    }
+                    Variables[varName] = convertedValue;
                 }
-
             }
 
             return null;
