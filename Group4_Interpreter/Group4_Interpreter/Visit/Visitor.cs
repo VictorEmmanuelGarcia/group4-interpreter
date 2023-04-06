@@ -24,7 +24,7 @@ namespace Group4_Interpreter.Visit
                 {
                     VisitProgramLines(linesContext);
                 }
-                Console.WriteLine("Code is VALID");
+                Console.WriteLine("\r\nCode is VALID");
             }
             else
             {
@@ -200,7 +200,30 @@ namespace Group4_Interpreter.Visit
             Console.Write(exp);
             return null;
         }
-
+        public override object? VisitUnaryExpression([NotNull] CodeParser.UnaryExpressionContext context)
+        {
+            var value = Visit(context.expression());
+            switch (context.unary_operator().GetText())
+            {
+                case "+":
+                    return value;
+                case "-":
+                    if (value is int intValue)
+                    {
+                        return -intValue;
+                    }
+                    else if (value is float floatValue)
+                    {
+                        return -floatValue;
+                    }
+                    else
+                    {
+                        throw new Exception($"Invalid unary operator '-' for type {value?.GetType().Name}");
+                    }
+                default:
+                    throw new Exception($"Invalid unary operator {context.unary_operator().GetText()}");
+            }
+        }
 
     }
 }
