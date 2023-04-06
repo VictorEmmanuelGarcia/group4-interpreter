@@ -74,7 +74,7 @@ LOGICAL_OPERATORS: 'AND' | 'OR' | 'NOT' ;
 
 // for DISPLAY: and SCAN:
 methodCall: IDENTIFIERS ':' (expression (',' expression)*)? ;
-display: NEWLINE? 'DISPLAY' ':' expression* ;
+display: NEWLINE? 'DISPLAY' ':' expression NEWLINE? ;
 
 // Not working
 SCAN: 'SCAN:';
