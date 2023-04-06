@@ -167,6 +167,12 @@ namespace Group4_Interpreter.Visit
             return null;
         }
 
+        public override object? VisitIdentifierExpression([NotNull] CodeParser.IdentifierExpressionContext context)
+        {
+            var varName = context.IDENTIFIERS().GetText();
+            return Variables[varName];
+        }
+
         public override object? VisitProgramDataTypes([NotNull] CodeParser.ProgramDataTypesContext context)
         {
             switch (context.GetText())
