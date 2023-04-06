@@ -1,5 +1,5 @@
 BEGIN CODE
-INT z
-z = 5
-DISPLAY: z
+FLOAT a = -5.15
+a = -a
+DISPLAY: -a
 END CODE
