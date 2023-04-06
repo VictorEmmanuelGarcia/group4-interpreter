@@ -54,6 +54,7 @@ expression
     | methodCall                                                #methodCallExpression
     | '(' expression ')'                                        #parenthesisExpression
     | 'NOT' expression                                          #notExpression
+    | unary_operator expression                                 #unaryExpression
     | expression multDivModOperators expression                 #multDivModExpression
     | expression addSubConcatenatorOperators expression         #addSubConcatenatorExpression
     | expression comparisonOperators expression                 #comparisonExpression
@@ -71,6 +72,8 @@ escapeCodeOpen: '[' ;
 escapeCodeClose: ']' ;
 
 LOGICAL_OPERATORS: 'AND' | 'OR' | 'NOT' ;
+
+unary_operator: '+' | '-' ;
 
 // for DISPLAY: and SCAN:
 methodCall: IDENTIFIERS ':' (expression (',' expression)*)? ;
