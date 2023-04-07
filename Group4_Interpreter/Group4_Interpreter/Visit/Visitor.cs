@@ -197,6 +197,10 @@ namespace Group4_Interpreter.Visit
         public override object? VisitDisplay([NotNull] CodeParser.DisplayContext context)
         {
             var exp =  Visit(context.expression());
+            if (exp is bool a)
+            {
+                exp = a.ToString().ToUpper();
+            }
             Console.Write(exp);
             return null;
         }
@@ -223,6 +227,20 @@ namespace Group4_Interpreter.Visit
                 default:
                     throw new Exception($"Invalid unary operator {context.unary_operator().GetText()}");
             }
+        }
+        public override object? VisitConcatExpression([NotNull] CodeParser.ConcatExpressionContext context)
+        {
+            var varLeft = Visit(context.expression(0));
+            var varRight = Visit(context.expression(1));
+            if (varLeft is bool a)
+            {
+                varLeft = a.ToString().ToUpper();
+            }
+            if (varRight is bool b)
+            {
+                varRight = b.ToString().ToUpper();
+            }
+            return $"{varLeft}{varRight}";
         }
 
     }
