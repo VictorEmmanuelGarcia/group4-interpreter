@@ -51,6 +51,11 @@ namespace Group4_Interpreter.Visit
                 // Visit the assignmentOperator context
                 return VisitAssignmentOperator(context.assignmentOperator());
             }
+            else if (context.assignmentStatement() != null)
+            {
+                // Visit the assignmentStatement context
+                return VisitAssignmentStatement(context.assignmentStatement());
+            }
             else if (context.display() != null)
             {
                 // Visit the display context
@@ -138,6 +143,16 @@ namespace Group4_Interpreter.Visit
             var variableValue = Visit(context.expression());
 
             return Variables[variableName] = variableValue;
+        }
+        public override object? VisitAssignmentStatement([NotNull] CodeParser.AssignmentStatementContext context)
+        {
+            var identifier = context.IDENTIFIERS();
+            foreach(var a in identifier)
+            {
+                var expression = context.expression().Accept(this);
+                Variables[a.GetText()] = expression;
+            }
+            return new object();
         }
 
         public override object? VisitConstantValueExpression([NotNull] CodeParser.ConstantValueExpressionContext context)
