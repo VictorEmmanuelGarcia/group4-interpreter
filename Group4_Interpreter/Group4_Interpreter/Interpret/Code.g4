@@ -6,6 +6,7 @@ programLines
     : variableInitialization
 	| variable
     | assignmentOperator
+    | assignmentStatement
 	| methodCall
     | ifCondition 
     | whileLoop
@@ -17,6 +18,7 @@ programLines
 variableInitialization: programDataTypes IDENTIFIERS (',' IDENTIFIERS)* ('=' expression)? NEWLINE?;
 variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
 assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
+assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE? ;
 
 beginBlocks: (BEGIN_IF | BEGIN_WHILE);
 
