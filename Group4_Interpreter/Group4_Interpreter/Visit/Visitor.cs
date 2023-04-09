@@ -24,11 +24,11 @@ namespace Group4_Interpreter.Visit
                 {
                     VisitProgramLines(linesContext);
                 }
-                Console.WriteLine("\r\nCode is VALID");
+                Console.WriteLine("\n\nCode is VALID");
             }
             else
             {
-                Console.WriteLine("Code must begin with 'BEGIN CODE' and end with 'END CODE'");
+                Console.WriteLine("\n\nCode must begin with 'BEGIN CODE' and end with 'END CODE'");
             }
 
             return null;
@@ -211,7 +211,7 @@ namespace Group4_Interpreter.Visit
 
         public override object? VisitDisplay([NotNull] CodeParser.DisplayContext context)
         {
-            var exp =  Visit(context.expression());
+            var exp = Visit(context.expression());
             if (exp is bool a)
             {
                 exp = a.ToString().ToUpper();
@@ -256,6 +256,14 @@ namespace Group4_Interpreter.Visit
                 varRight = b.ToString().ToUpper();
             }
             return $"{varLeft}{varRight}";
+        }
+        public override object? VisitEscapeCodeExpression([NotNull] CodeParser.EscapeCodeExpressionContext context)
+        {
+            return context.ESCAPECODE().GetText()[1];
+        }
+        public override object? VisitNewLineExpression([NotNull] CodeParser.NewLineExpressionContext context)
+        {
+            return "\n";
         }
 
     }
