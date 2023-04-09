@@ -60,7 +60,8 @@ expression
     | expression multDivModOperators expression                 #multDivModExpression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
-    | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
+    | ESCAPECODE                                                #escapeCodeExpression
+    | NEWLINE                                                   #newLineExpression
     | expression concatVariable expression                      #concatExpression
     ; 
 
@@ -68,8 +69,7 @@ multDivModOperators: '*' | '/' | '%' ;
 comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
-escapeCodeOpen: '[' ;
-escapeCodeClose: ']' ;
+ESCAPECODE: '['.']' ;
 
 LOGICAL_OPERATORS: 'AND' | 'OR' | 'NOT' ;
 
@@ -86,4 +86,4 @@ scanFunction: SCAN IDENTIFIERS (',' IDENTIFIERS)* ;
 IDENTIFIERS: [a-zA-Z_][a-zA-Z0-9_]* ;
 COMMENTS: '#' ~[\r\n]* -> skip ;
 WHITESPACES: [ \t\r]+ -> skip ;
-NEWLINE: '\r'? '\n'| '\r';
+NEWLINE: '$';
