@@ -6,6 +6,7 @@ programLines
     : variableInitialization
 	| variable
     | assignmentOperator
+    | assignmentStatement
 	| methodCall
     | ifCondition 
     | whileLoop
@@ -17,8 +18,9 @@ programLines
 variableInitialization: programDataTypes IDENTIFIERS (',' IDENTIFIERS)* ('=' expression)? NEWLINE?;
 variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
 assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
+assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE? ;
 
-beginBlocks: (BEGIN_CODE | BEGIN_IF | BEGIN_WHILE);
+beginBlocks: (BEGIN_IF | BEGIN_WHILE);
 
 BEGIN_CODE: 'BEGIN CODE' ;
 END_CODE: 'END CODE' ;
@@ -33,17 +35,18 @@ BEGIN_WHILE: 'BEGIN' 'WHILE' ;
 END_WHILE: 'END' 'WHILE' ;
 whileLoop: WHILE '(' expression ')' BEGIN_WHILE beginBlocks* END_WHILE ;
 
-programDataTypes: INT | FLOAT | BOOL | CHAR ;
+programDataTypes: INT | FLOAT | BOOL | CHAR | STRING ;
 INT: 'INT' ;
 FLOAT: 'FLOAT';
 CHAR: 'CHAR';
 BOOL: 'BOOL';
+STRING: 'STRING';
 
 constantValues: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUES | STRING_VALUES ;
 INTEGER_VALUES: [0-9]+ ;
 FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
 CHARACTER_VALUES: '\'' ~[\r\n\'] '\'' ;
-BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
+BOOLEAN_VALUES: 'TRUE' | 'FALSE' ;
 STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
 
 expression
@@ -53,25 +56,28 @@ expression
     | methodCall                                                #methodCallExpression
     | '(' expression ')'                                        #parenthesisExpression
     | 'NOT' expression                                          #notExpression
+    | unary_operator expression                                 #unaryExpression
     | expression multDivModOperators expression                 #multDivModExpression
-    | expression addSubConcatenatorOperators expression         #addSubConcatenatorExpression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
-    | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
+    | ESCAPECODE                                                #escapeCodeExpression
+    | NEWLINE                                                   #newLineExpression
+    | expression concatVariable expression                      #concatExpression
     ; 
 
 multDivModOperators: '*' | '/' | '%' ;
-addSubConcatenatorOperators: '+' | '-' | '&' ;
 comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
+concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
-escapeCodeOpen: '[' ;
-escapeCodeClose: ']' ;
+ESCAPECODE: '['.']' ;
 
 LOGICAL_OPERATORS: 'AND' | 'OR' | 'NOT' ;
 
+unary_operator: '+' | '-' ;
+
 // for DISPLAY: and SCAN:
 methodCall: IDENTIFIERS ':' (expression (',' expression)*)? ;
-display: NEWLINE? 'DISPLAY' ':' expression* ;
+display: NEWLINE? 'DISPLAY' ':' expression NEWLINE? ;
 
 // Not working
 SCAN: 'SCAN:';
@@ -80,4 +86,4 @@ scanFunction: SCAN IDENTIFIERS (',' IDENTIFIERS)* ;
 IDENTIFIERS: [a-zA-Z_][a-zA-Z0-9_]* ;
 COMMENTS: '#' ~[\r\n]* -> skip ;
 WHITESPACES: [ \t\r]+ -> skip ;
-NEWLINE: '\r'? '\n'| '\r';
+NEWLINE: '$';
