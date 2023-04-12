@@ -89,7 +89,7 @@ namespace Group4_Interpreter.Visit
             if (!typeMap.TryGetValue(typeStr, out var type))
             {
                 Console.WriteLine($"Invalid variable type '{typeStr}'");
-                return null;
+                Environment.Exit(1);
             }
 
             var varNames = context.IDENTIFIERS().Select(x => x.GetText()).ToArray();
@@ -104,6 +104,7 @@ namespace Group4_Interpreter.Visit
                 if (Variables.ContainsKey(varName))
                 {
                     Console.WriteLine($"Variable '{varName}' is already defined!");
+                    Environment.Exit(1);
                 }
                 else
                 {
