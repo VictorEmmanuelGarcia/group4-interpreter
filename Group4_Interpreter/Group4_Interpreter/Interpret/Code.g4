@@ -1,6 +1,6 @@
 ﻿grammar Code;
 
-programStructure: BEGIN_CODE NEWLINE programLines* NEWLINE END_CODE ;
+programStructure: NEWLINE? BEGIN_CODE NEWLINE? programLines* NEWLINE? END_CODE EOF;
 
 programLines
     : variableInitialization
