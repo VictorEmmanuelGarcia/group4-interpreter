@@ -14,64 +14,64 @@ namespace Group4_Interpreter.Visit
     public class Visitor : CodeBaseVisitor<object?>
     {
         public Dictionary<string, object?> Variables { get; } = new Dictionary<string, object?>();
-        public override object? VisitProgramStructure([NotNull] CodeParser.ProgramStructureContext context)
-        {
-            string code = context.GetText().Trim();
-            if (code.StartsWith("BEGIN CODE") && code.EndsWith("END CODE"))
-            {
-                //Visit each statement in the code
-                foreach (var linesContext in context.programLines())
-                {
-                    VisitProgramLines(linesContext);
-                }
-                Console.WriteLine("\n\nCode is VALID");
-            }
-            else
-            {
-                Console.WriteLine("\n\nCode must begin with 'BEGIN CODE' and end with 'END CODE'");
-            }
+        //public override object? VisitProgramStructure([NotNull] CodeParser.ProgramStructureContext context)
+        //{
+        //    string code = context.GetText().Trim();
+        //    if (code.StartsWith("BEGIN CODE") && code.EndsWith("END CODE"))
+        //    {
+        //        //Visit each statement in the code
+        //        foreach (var linesContext in context.programLines())
+        //        {
+        //            VisitProgramLines(linesContext);
+        //        }
+        //        Console.WriteLine("\n\nCode is VALID");
+        //    }
+        //    else
+        //    {
+        //        Console.WriteLine("\n\nCode must begin with 'BEGIN CODE' and end with 'END CODE'");
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
-        public override object? VisitProgramLines([NotNull] CodeParser.ProgramLinesContext context)
-        {
-            if (context.variableInitialization() != null)
-            {
-                // Visit the variableInitialization context
-                return VisitVariableInitialization(context.variableInitialization());
-            }
-            else if (context.variable() != null)
-            {
-                // Visit the variable context
-                return VisitVariable(context.variable());
-            }
-            else if (context.assignmentOperator() != null)
-            {
-                // Visit the assignmentOperator context
-                return VisitAssignmentOperator(context.assignmentOperator());
-            }
-            else if (context.assignmentStatement() != null)
-            {
-                // Visit the assignmentStatement context
-                return VisitAssignmentStatement(context.assignmentStatement());
-            }
-            else if (context.display() != null)
-            {
-                // Visit the display context
-               return VisitDisplay(context.display());
-            }
-            else if (context.scanFunction() != null)
-            {
-                // Visit the scanFunction context
-                return VisitScanFunction(context.scanFunction());
-            }
-            else
-            {
-                throw new Exception("Unknown program line");
-            }
+        //public override object? VisitProgramLines([NotNull] CodeParser.ProgramLinesContext context)
+        //{
+        //    if (context.variableInitialization() != null)
+        //    {
+        //        // Visit the variableInitialization context
+        //        return VisitVariableInitialization(context.variableInitialization());
+        //    }
+        //    else if (context.variable() != null)
+        //    {
+        //        // Visit the variable context
+        //        return VisitVariable(context.variable());
+        //    }
+        //    else if (context.assignmentOperator() != null)
+        //    {
+        //        // Visit the assignmentOperator context
+        //        return VisitAssignmentOperator(context.assignmentOperator());
+        //    }
+        //    else if (context.assignmentStatement() != null)
+        //    {
+        //        // Visit the assignmentStatement context
+        //        return VisitAssignmentStatement(context.assignmentStatement());
+        //    }
+        //    else if (context.display() != null)
+        //    {
+        //        // Visit the display context
+        //       return VisitDisplay(context.display());
+        //    }
+        //    else if (context.scanFunction() != null)
+        //    {
+        //        // Visit the scanFunction context
+        //        return VisitScanFunction(context.scanFunction());
+        //    }
+        //    else
+        //    {
+        //        throw new Exception("Unknown program line");
+        //    }
            
-        }
+        //}
 
         public override object? VisitVariableInitialization([NotNull] CodeParser.VariableInitializationContext context)
         {
