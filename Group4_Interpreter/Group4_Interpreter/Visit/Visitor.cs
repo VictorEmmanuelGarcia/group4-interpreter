@@ -14,7 +14,7 @@ namespace Group4_Interpreter.Visit
     public class Visitor : CodeBaseVisitor<object?>
     {
         public Dictionary<string, object?> Variables { get; } = new Dictionary<string, object?>();
-        public override object? VisitVariableInitialization([NotNull] CodeParser.VariableInitializationContext context)
+        public override object? VisitVariableInitialization(CodeParser.VariableInitializationContext context)
         {
             // Map string type names to corresponding Type objects
             var typeMap = new Dictionary<string, Type>()
@@ -32,32 +32,42 @@ namespace Group4_Interpreter.Visit
                 Console.WriteLine($"Invalid variable type '{typeStr}'");
                 Environment.Exit(1);
             }
+            var varNames = context.IDENTIFIERS();
 
-            var varNames = context.IDENTIFIERS().Select(x => x.GetText()).ToArray();
-            object? varValue = null;
-            if (context.expression() != null)
-            {
-                varValue = Visit(context.expression());
-            }
+            var contextstring = context.GetText().Replace(typeStr, "");
 
-            foreach (var varName in varNames)
+            var contextParts = contextstring.Split(',');
+            var exp = context.expression();
+            int expressionCounter = 0;
+
+            for (int x = 0; x < contextParts.Length; x++)
             {
-                if (Variables.ContainsKey(varName))
+                if (Variables.ContainsKey(varNames[x].GetText()))
                 {
-                    Console.WriteLine($"Variable '{varName}' is already defined!");
+                    Console.WriteLine($"{varNames[x].GetText()} is already defined!");
                     Environment.Exit(1);
+                }
+
+                if (contextParts[x].Contains('='))
+                {
+                    if (expressionCounter < exp.Length)
+                    {
+                        var expr = Visit(exp[expressionCounter]);
+                        var convertedValue = expr;
+                        if (expr != null && type != expr.GetType())
+                        {
+                            convertedValue = TypeDescriptor.GetConverter(type).ConvertFrom(expr);
+                        }
+
+                        Variables[varNames[x].GetText()] = convertedValue;
+                        expressionCounter++;
+                    }
                 }
                 else
                 {
-                    var convertedValue = varValue;
-                    if (varValue != null && type != varValue.GetType())
-                    {
-                        convertedValue = TypeDescriptor.GetConverter(type).ConvertFrom(varValue);
-                    }
-                    Variables[varName] = convertedValue;
+                    Variables[varNames[x].GetText()] = null;
                 }
             }
-
             return null;
         }
 
