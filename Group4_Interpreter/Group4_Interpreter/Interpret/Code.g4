@@ -15,7 +15,7 @@ programLines
 	| COMMENTS
     ;
 
-variableInitialization: programDataTypes IDENTIFIERS (',' IDENTIFIERS)* ('=' expression)? NEWLINE?;
+variableInitialization: NEWLINE? programDataTypes IDENTIFIERS ('=' expression)? (',' IDENTIFIERS ('=' expression)?)*;
 variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
 assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
 assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE? ;
