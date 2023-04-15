@@ -1,11 +1,12 @@
 ﻿grammar Code;
 
-programStructure: BEGIN_CODE NEWLINE programLines* NEWLINE END_CODE ;
+programStructure: NEWLINE? BEGIN_CODE NEWLINE? programLines* NEWLINE? END_CODE EOF;
 
 programLines
     : variableInitialization
 	| variable
     | assignmentOperator
+    | assignmentStatement
 	| methodCall
     | ifCondition 
     | whileLoop
@@ -17,6 +18,7 @@ programLines
 variableInitialization: programDataTypes IDENTIFIERS (',' IDENTIFIERS)* ('=' expression)? NEWLINE?;
 variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
 assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
+assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE? ;
 
 beginBlocks: (BEGIN_IF | BEGIN_WHILE);
 
@@ -44,7 +46,7 @@ constantValues: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUE
 INTEGER_VALUES: [0-9]+ ;
 FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
 CHARACTER_VALUES: '\'' ~[\r\n\'] '\'' ;
-BOOLEAN_VALUES:  '\"TRUE\"' | '\"FALSE\"' ;
+BOOLEAN_VALUES: 'TRUE' | 'FALSE' ;
 STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
 
 expression
@@ -54,23 +56,24 @@ expression
     | methodCall                                                #methodCallExpression
     | '(' expression ')'                                        #parenthesisExpression
     | 'NOT' expression                                          #notExpression
+    | unary_operator expression                                 #unaryExpression
     | expression multDivModOperators expression                 #multDivModExpression
-    | expression addSubConcatenatorOperators expression         #addSubConcatenatorExpression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
-    | escapeCodeOpen expression escapeCodeClose                 #escapeCodeExpression
+    | ESCAPECODE                                                #escapeCodeExpression
+    | NEWLINE                                                   #newLineExpression
     | expression concatVariable expression                      #concatExpression
     ; 
 
 multDivModOperators: '*' | '/' | '%' ;
-addSubConcatenatorOperators: '+' | '-' | '&' ;
 comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
-escapeCodeOpen: '[' ;
-escapeCodeClose: ']' ;
+ESCAPECODE: '['.']' ;
 
 LOGICAL_OPERATORS: 'AND' | 'OR' | 'NOT' ;
+
+unary_operator: '+' | '-' ;
 
 // for DISPLAY: and SCAN:
 methodCall: IDENTIFIERS ':' (expression (',' expression)*)? ;
@@ -83,4 +86,4 @@ scanFunction: SCAN IDENTIFIERS (',' IDENTIFIERS)* ;
 IDENTIFIERS: [a-zA-Z_][a-zA-Z0-9_]* ;
 COMMENTS: '#' ~[\r\n]* -> skip ;
 WHITESPACES: [ \t\r]+ -> skip ;
-NEWLINE: '\r'? '\n'| '\r';
+NEWLINE: '$';

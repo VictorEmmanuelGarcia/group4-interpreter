@@ -14,60 +14,6 @@ namespace Group4_Interpreter.Visit
     public class Visitor : CodeBaseVisitor<object?>
     {
         public Dictionary<string, object?> Variables { get; } = new Dictionary<string, object?>();
-        public override object? VisitProgramStructure([NotNull] CodeParser.ProgramStructureContext context)
-        {
-            string code = context.GetText().Trim();
-            if (code.StartsWith("BEGIN CODE") && code.EndsWith("END CODE"))
-            {
-                //Visit each statement in the code
-                foreach (var linesContext in context.programLines())
-                {
-                    VisitProgramLines(linesContext);
-                }
-                Console.WriteLine("Code is VALID");
-            }
-            else
-            {
-                Console.WriteLine("Code must begin with 'BEGIN CODE' and end with 'END CODE'");
-            }
-
-            return null;
-        }
-
-        public override object? VisitProgramLines([NotNull] CodeParser.ProgramLinesContext context)
-        {
-            if (context.variableInitialization() != null)
-            {
-                // Visit the variableInitialization context
-                return VisitVariableInitialization(context.variableInitialization());
-            }
-            else if (context.variable() != null)
-            {
-                // Visit the variable context
-                return VisitVariable(context.variable());
-            }
-            else if (context.assignmentOperator() != null)
-            {
-                // Visit the assignmentOperator context
-                return VisitAssignmentOperator(context.assignmentOperator());
-            }
-            else if (context.display() != null)
-            {
-                // Visit the display context
-               return VisitDisplay(context.display());
-            }
-            else if (context.scanFunction() != null)
-            {
-                // Visit the scanFunction context
-                return VisitScanFunction(context.scanFunction());
-            }
-            else
-            {
-                throw new Exception("Unknown program line");
-            }
-           
-        }
-
         public override object? VisitVariableInitialization([NotNull] CodeParser.VariableInitializationContext context)
         {
             // Map string type names to corresponding Type objects
@@ -84,7 +30,7 @@ namespace Group4_Interpreter.Visit
             if (!typeMap.TryGetValue(typeStr, out var type))
             {
                 Console.WriteLine($"Invalid variable type '{typeStr}'");
-                return null;
+                Environment.Exit(1);
             }
 
             var varNames = context.IDENTIFIERS().Select(x => x.GetText()).ToArray();
@@ -99,6 +45,7 @@ namespace Group4_Interpreter.Visit
                 if (Variables.ContainsKey(varName))
                 {
                     Console.WriteLine($"Variable '{varName}' is already defined!");
+                    Environment.Exit(1);
                 }
                 else
                 {
@@ -138,6 +85,16 @@ namespace Group4_Interpreter.Visit
             var variableValue = Visit(context.expression());
 
             return Variables[variableName] = variableValue;
+        }
+        public override object? VisitAssignmentStatement([NotNull] CodeParser.AssignmentStatementContext context)
+        {
+            var identifier = context.IDENTIFIERS();
+            foreach(var a in identifier)
+            {
+                var expression = context.expression().Accept(this);
+                Variables[a.GetText()] = expression;
+            }
+            return new object();
         }
 
         public override object? VisitConstantValueExpression([NotNull] CodeParser.ConstantValueExpressionContext context)
@@ -198,11 +155,60 @@ namespace Group4_Interpreter.Visit
 
         public override object? VisitDisplay([NotNull] CodeParser.DisplayContext context)
         {
-            var exp =  Visit(context.expression());
+            var exp = Visit(context.expression());
+            if (exp is bool a)
+            {
+                exp = a.ToString().ToUpper();
+            }
             Console.Write(exp);
             return null;
         }
-
+        public override object? VisitUnaryExpression([NotNull] CodeParser.UnaryExpressionContext context)
+        {
+            var value = Visit(context.expression());
+            switch (context.unary_operator().GetText())
+            {
+                case "+":
+                    return value;
+                case "-":
+                    if (value is int intValue)
+                    {
+                        return -intValue;
+                    }
+                    else if (value is float floatValue)
+                    {
+                        return -floatValue;
+                    }
+                    else
+                    {
+                        throw new Exception($"Invalid unary operator '-' for type {value?.GetType().Name}");
+                    }
+                default:
+                    throw new Exception($"Invalid unary operator {context.unary_operator().GetText()}");
+            }
+        }
+        public override object? VisitConcatExpression([NotNull] CodeParser.ConcatExpressionContext context)
+        {
+            var varLeft = Visit(context.expression(0));
+            var varRight = Visit(context.expression(1));
+            if (varLeft is bool a)
+            {
+                varLeft = a.ToString().ToUpper();
+            }
+            if (varRight is bool b)
+            {
+                varRight = b.ToString().ToUpper();
+            }
+            return $"{varLeft}{varRight}";
+        }
+        public override object? VisitEscapeCodeExpression([NotNull] CodeParser.EscapeCodeExpressionContext context)
+        {
+            return context.ESCAPECODE().GetText()[1];
+        }
+        public override object? VisitNewLineExpression([NotNull] CodeParser.NewLineExpressionContext context)
+        {
+            return "\n";
+        }
 
     }
 }

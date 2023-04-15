@@ -1,6 +1,5 @@
 BEGIN CODE
-CHAR x = 'hi' 
-CHAR y = 'i'
-CHAR z = x & y
-DISPLAY: z
+INT a = -5
+a = -a
+DISPLAY: a
 END CODE
