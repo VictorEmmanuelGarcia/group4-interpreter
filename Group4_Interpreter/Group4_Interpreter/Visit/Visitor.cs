@@ -217,6 +217,363 @@ namespace Group4_Interpreter.Visit
         {
             return "\n";
         }
+        public override object? VisitScanFunction([NotNull] CodeParser.ScanFunctionContext context)
+        {
+            foreach (var id in context.IDENTIFIERS().Select(x => x.GetText()).ToArray())
+            {
+                Console.Write($"Input the corresponding value for the declared variable {id}: ");
+                var input = Console.ReadLine();
 
+                if (int.TryParse(input, out int intValue))
+                {
+                    Variables[id] = intValue;
+                }
+                else if (float.TryParse(input, out float floatValue))
+                {
+                    Variables[id] = floatValue;
+                }
+                else if (char.TryParse(input, out char charValue))
+                {
+                    Variables[id] = charValue;
+                }
+                else if (bool.TryParse(input, out bool boolValue))
+                {
+                    Variables[id] = boolValue;
+                }
+                else if (input != null)
+                {
+                    Variables[id] = input;
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid input for variable {id}");
+                }
+            }
+            return null;
+        }
+        public override object? VisitParenthesisExpression([NotNull] CodeParser.ParenthesisExpressionContext context)
+        {
+            return Visit(context.expression());
+        }
+        public override object? VisitMultDivModExpression([NotNull] CodeParser.MultDivModExpressionContext context)
+        {
+            var leftValue = Visit(context.expression(0));
+            var rightValue = Visit(context.expression(1));
+
+            if (leftValue == null || rightValue == null)
+            {
+                throw new ArgumentNullException("Operand/s cannot be null.");
+            }
+            else if (leftValue is int leftIntValue && rightValue is int rightIntValue)
+            {
+                if (context.multDivModOperators().GetText() == "*")
+                {
+                    return leftIntValue * rightIntValue;
+                }
+                else if (context.multDivModOperators().GetText() == "/")
+                {
+                    return leftIntValue / rightIntValue;
+                }
+                else if (context.multDivModOperators().GetText() == "%")
+                {
+                    return leftIntValue % rightIntValue;
+                }
+            }
+            else if (leftValue is float leftFloatValue && rightValue is float rightFloatValue)
+            {
+                if (context.multDivModOperators().GetText() == "*")
+                {
+                    return leftFloatValue * rightFloatValue;
+                }
+                else if (context.multDivModOperators().GetText() == "/")
+                {
+                    return leftFloatValue / rightFloatValue;
+                }
+                else if (context.multDivModOperators().GetText() == "%")
+                {
+                    return leftFloatValue % rightFloatValue;
+                }
+            }
+            else if (leftValue is int leftIntValue2 && rightValue is float rightFloatValue2)
+            {
+                if (context.multDivModOperators().GetText() == "*")
+                {
+                    return leftIntValue2 * rightFloatValue2;
+                }
+                else if (context.multDivModOperators().GetText() == "/")
+                {
+                    return leftIntValue2 / rightFloatValue2;
+                }
+                else if (context.multDivModOperators().GetText() == "%")
+                {
+                    return leftIntValue2 % rightFloatValue2;
+                }
+            }
+            else if (leftValue is float leftFloatValue2 && rightValue is int rightIntValue2)
+            {
+                if (context.multDivModOperators().GetText() == "*")
+                {
+                    return leftFloatValue2 * rightIntValue2;
+                }
+                else if (context.multDivModOperators().GetText() == "/")
+                {
+                    return leftFloatValue2 / rightIntValue2;
+                }
+                else if (context.multDivModOperators().GetText() == "%")
+                {
+                    return leftFloatValue2 % rightIntValue2;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid operand types: " + leftValue?.GetType().Name + " and " + rightValue?.GetType().Name);
+            }
+            throw new InvalidOperationException("Invalid operator or operand types: " + context.multDivModOperators().GetText());
+        }
+        public override object? VisitAddSubExpression([NotNull] CodeParser.AddSubExpressionContext context)
+        {
+            var leftValue = Visit(context.expression(0));
+            var rightValue = Visit(context.expression(1));
+
+            if (leftValue == null || rightValue == null)
+            {
+                throw new ArgumentNullException("Operand/s cannot be null.");
+            }
+            else if (leftValue is int leftIntValue && rightValue is int rightIntValue)
+            {
+                if (context.addSubOperators().GetText() == "+")
+                {
+                    return leftIntValue + rightIntValue;
+                }
+                else if (context.addSubOperators().GetText() == "-")
+                {
+                    return leftIntValue - rightIntValue;
+                }
+            }
+            else if (leftValue is float leftFloatValue && rightValue is float rightFloatValue)
+            {
+                if (context.addSubOperators().GetText() == "+")
+                {
+                    return leftFloatValue + rightFloatValue;
+                }
+                else if (context.addSubOperators().GetText() == "-")
+                {
+                    return leftFloatValue - rightFloatValue;
+                }
+            }
+            else if (leftValue is int leftIntValue2 && rightValue is float rightFloatValue2)
+            {
+                if (context.addSubOperators().GetText() == "+")
+                {
+                    return leftIntValue2 + rightFloatValue2;
+                }
+                else if (context.addSubOperators().GetText() == "-")
+                {
+                    return leftIntValue2 - rightFloatValue2;
+                }
+            }
+            else if (leftValue is float leftFloatValue2 && rightValue is int rightIntValue2)
+            {
+                if (context.addSubOperators().GetText() == "+")
+                {
+                    return leftFloatValue2 + rightIntValue2;
+                }
+                else if (context.addSubOperators().GetText() == "-")
+                {
+                    return leftFloatValue2 - rightIntValue2;
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid operand types: " + leftValue?.GetType().Name + " and " + rightValue?.GetType().Name);
+            }
+            throw new InvalidOperationException("Invalid operator or operand types: " + context.addSubOperators().GetText());
+        }
+        public override object? VisitComparisonExpression([NotNull] CodeParser.ComparisonExpressionContext context)
+        {
+            var leftValue = Visit(context.expression(0));
+            var rightValue = Visit(context.expression(1));
+
+            if (leftValue == null || rightValue == null)
+            {
+                throw new ArgumentNullException("Operand/s cannot be null.");
+            }
+            else if (leftValue is int leftIntValue && rightValue is int rightIntValue)
+            {
+                if (context.comparisonOperators().GetText() == ">")
+                {
+                    return leftIntValue > rightIntValue;
+                }
+                else if (context.comparisonOperators().GetText() == "<")
+                {
+                    return leftIntValue < rightIntValue;
+                }
+                else if (context.comparisonOperators().GetText() == ">=")
+                {
+                    return leftIntValue >= rightIntValue;
+                }
+                else if (context.comparisonOperators().GetText() == "<=")
+                {
+                    return leftIntValue <= rightIntValue;
+                }
+                else if (context.comparisonOperators().GetText() == "==")
+                {
+                    return leftIntValue == rightIntValue;
+                }
+                else if (context.comparisonOperators().GetText() == "<>")
+                {
+                    return leftIntValue != rightIntValue;
+                }
+                else
+                {
+                    throw new Exception("Unknown operator");
+                }
+            }
+            else if (leftValue is float leftFloatValue && rightValue is float rightFloatValue)
+            {
+                if (context.comparisonOperators().GetText() == ">")
+                {
+                    return leftFloatValue > rightFloatValue;
+                }
+                else if (context.comparisonOperators().GetText() == "<")
+                {
+                    return leftFloatValue < rightFloatValue;
+                }
+                else if (context.comparisonOperators().GetText() == ">=")
+                {
+                    return leftFloatValue >= rightFloatValue;
+                }
+                else if (context.comparisonOperators().GetText() == "<=")
+                {
+                    return leftFloatValue <= rightFloatValue;
+                }
+                else if (context.comparisonOperators().GetText() == "==")
+                {
+                    return leftFloatValue == rightFloatValue;
+                }
+                else if (context.comparisonOperators().GetText() == "<>")
+                {
+                    return leftFloatValue != rightFloatValue;
+                }
+                else
+                {
+                    throw new Exception("Unknown operator");
+                }
+            }
+            else if (leftValue is int leftIntValue2 && rightValue is float rightFloatValue2)
+            {
+                if (context.comparisonOperators().GetText() == ">")
+                {
+                    return leftIntValue2 > rightFloatValue2;
+                }
+                else if (context.comparisonOperators().GetText() == "<")
+                {
+                    return leftIntValue2 < rightFloatValue2;
+                }
+                else if (context.comparisonOperators().GetText() == ">=")
+                {
+                    return leftIntValue2 >= rightFloatValue2;
+                }
+                else if (context.comparisonOperators().GetText() == "<=")
+                {
+                    return leftIntValue2 <= rightFloatValue2;
+                }
+                else if (context.comparisonOperators().GetText() == "==")
+                {
+                    return leftIntValue2 == rightFloatValue2;
+                }
+                else if (context.comparisonOperators().GetText() == "<>")
+                {
+                    return leftIntValue2 != rightFloatValue2;
+                }
+                else
+                {
+                    throw new Exception("Unknown operator");
+                }
+            }
+            else if (leftValue is float leftFloatValue2 && rightValue is int rightIntValue2)
+            {
+                if (context.comparisonOperators().GetText() == ">")
+                {
+                    return leftFloatValue2 > rightIntValue2;
+                }
+                else if (context.comparisonOperators().GetText() == "<")
+                {
+                    return leftFloatValue2 < rightIntValue2;
+                }
+                else if (context.comparisonOperators().GetText() == ">=")
+                {
+                    return leftFloatValue2 >= rightIntValue2;
+                }
+                else if (context.comparisonOperators().GetText() == "<=")
+                {
+                    return leftFloatValue2 <= rightIntValue2;
+                }
+                else if (context.comparisonOperators().GetText() == "==")
+                {
+                    return leftFloatValue2 == rightIntValue2;
+                }
+                else if (context.comparisonOperators().GetText() == "<>")
+                {
+                    return leftFloatValue2 != rightIntValue2;
+                }
+                else
+                {
+                    throw new Exception("Unknown operator");
+                }
+            }
+            else if (leftValue is bool leftBoolValue && rightValue is bool rightBoolValue)
+            {
+                if (context.comparisonOperators().GetText() == "==")
+                {
+                    return leftBoolValue == rightBoolValue;
+                }
+                else if (context.comparisonOperators().GetText() == "<>")
+                {
+                    return leftBoolValue != rightBoolValue;
+                }
+                else
+                {
+                    throw new Exception("Unknown operator");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid operand types: " + leftValue?.GetType().Name + " and " + rightValue?.GetType().Name);
+            }
+        }
+        public override object? VisitLogicalExpression([NotNull] CodeParser.LogicalExpressionContext context)
+        {
+            var leftValue = Visit(context.expression(0)); 
+            var rightValue = Visit(context.expression(1));
+
+            if (leftValue == null || rightValue == null)
+            {
+                throw new ArgumentNullException("Operand/s cannot be null.");
+            }
+            else if (leftValue is bool leftBoolValue && rightValue is bool rightBoolValue)
+            {
+                if (context.logicalOperators().GetText() == "AND")
+                {
+                    return leftBoolValue && rightBoolValue;
+                }
+                else if (context.logicalOperators().GetText() == "OR")
+                {
+                    return leftBoolValue || rightBoolValue;
+                }
+                else if (context.logicalOperators().GetText() == "NOT")
+                {
+                    return !leftBoolValue;
+                }
+                else
+                {
+                    throw new Exception("Unknown operator");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid operand types: " + leftValue?.GetType().Name + " and " + rightValue?.GetType().Name);
+            }
+        }
     }
 }
