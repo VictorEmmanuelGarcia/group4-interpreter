@@ -76,7 +76,8 @@ namespace Group4_Interpreter.Visit
             var dataTypeObj = VisitProgramDataTypes(context.programDataTypes());
             if (dataTypeObj is null)
             {
-                throw new Exception("Invalid data type");
+                Console.Write($"Invalid data type '{dataTypeObj}'");
+                Environment.Exit(1);
             }
 
             var dataType = (Type)dataTypeObj;
