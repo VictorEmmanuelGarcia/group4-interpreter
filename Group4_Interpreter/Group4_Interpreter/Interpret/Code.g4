@@ -15,7 +15,7 @@ programLines
 	| COMMENTS
     ;
 
-variableInitialization: programDataTypes IDENTIFIERS (',' IDENTIFIERS)* ('=' expression)? NEWLINE?;
+variableInitialization: NEWLINE? programDataTypes IDENTIFIERS ('=' expression)? (',' IDENTIFIERS ('=' expression)?)*;
 variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
 assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
 assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE? ;
@@ -58,6 +58,7 @@ expression
     | 'NOT' expression                                          #notExpression
     | unary_operator expression                                 #unaryExpression
     | expression multDivModOperators expression                 #multDivModExpression
+    | expression addSubOperators expression                     #addSubExpression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
     | ESCAPECODE                                                #escapeCodeExpression
@@ -66,6 +67,7 @@ expression
     ; 
 
 multDivModOperators: '*' | '/' | '%' ;
+addSubOperators: '+' | '-' ;
 comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
