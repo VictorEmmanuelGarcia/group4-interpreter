@@ -58,6 +58,7 @@ expression
     | 'NOT' expression                                          #notExpression
     | unary_operator expression                                 #unaryExpression
     | expression multDivModOperators expression                 #multDivModExpression
+    | expression addSubOperators expression                     #addSubExpression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
     | ESCAPECODE                                                #escapeCodeExpression
@@ -66,6 +67,7 @@ expression
     ; 
 
 multDivModOperators: '*' | '/' | '%' ;
+addSubOperators: '+' | '-' ;
 comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
