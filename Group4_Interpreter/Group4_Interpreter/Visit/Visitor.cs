@@ -163,7 +163,10 @@ namespace Group4_Interpreter.Visit
         {
             return base.VisitIfCondition(context);
         }
-
+        public override object VisitElseIfCondition([NotNull] CodeParser.ElseIfConditionContext context)
+        {
+            return base.VisitElseIfCondition(context);
+        }
         public override object? VisitDisplay([NotNull] CodeParser.DisplayContext context)
         {
             var exp = Visit(context.expression());
@@ -578,5 +581,6 @@ namespace Group4_Interpreter.Visit
                 throw new InvalidOperationException("Invalid operand types: " + leftValue?.GetType().Name + " and " + rightValue?.GetType().Name);
             }
         }
+        
     }
 }
