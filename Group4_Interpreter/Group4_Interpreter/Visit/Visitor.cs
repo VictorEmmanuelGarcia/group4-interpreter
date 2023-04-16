@@ -151,21 +151,27 @@ namespace Group4_Interpreter.Visit
                     return typeof(char);
                 case "STRING":
                     return typeof(string);
-                case "CHAR":
-                    return typeof(char);
                 case "BOOL":
                     return typeof(bool);
                 default:
                     throw new Exception ("Invalid DATA TYPE!");
             }
         }
-        public override object VisitIfCondition([NotNull] CodeParser.IfConditionContext context)
+        public override object? VisitIfCondition([NotNull] CodeParser.IfConditionContext context)
+
         {
-            return base.VisitIfCondition(context);
-        }
-        public override object VisitElseIfCondition([NotNull] CodeParser.ElseIfConditionContext context)
-        {
-            return base.VisitElseIfCondition(context);
+            bool condition = (bool)Visit(context.expression());
+
+            if (condition)
+            {
+                Visit(context.block());
+            }
+            else
+            {
+                Visit(context.elseIfCondition());
+            }
+
+            return null;
         }
         public override object? VisitDisplay([NotNull] CodeParser.DisplayContext context)
         {

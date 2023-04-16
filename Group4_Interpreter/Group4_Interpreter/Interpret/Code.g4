@@ -25,10 +25,15 @@ beginBlocks: (BEGIN_IF | BEGIN_WHILE);
 BEGIN_CODE: 'BEGIN CODE' ;
 END_CODE: 'END CODE' ;
 
-BEGIN_IF: 'BEGIN' 'IF' ;
-END_IF: 'END' 'IF' ;
-ifCondition: 'IF' '('expression')' BEGIN_IF beginBlocks END_IF elseIfCondition? ;
-elseIfCondition: 'ELSE' (BEGIN_IF beginBlocks END_IF) | ifCondition ;
+BEGIN_IF: 'BEGIN IF' ;
+END_IF: 'END IF' ;
+IF: 'IF';
+ELSE: 'ELSE';
+ifCondition: IF '('expression')' block elseIfCondition? ;
+elseIfCondition: ELSE block | ifCondition ;
+
+line: ifCondition | whileLoop | assignmentOperator | assignmentStatement | variable | variableInitialization;
+block: BEGIN_IF line* END_IF;
 
 WHILE: 'WHILE' ;
 BEGIN_WHILE: 'BEGIN' 'WHILE' ;
@@ -72,7 +77,6 @@ comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
 ESCAPECODE: '['.']' ;
-
 LOGICAL_OPERATORS: 'AND' | 'OR' | 'NOT' ;
 
 unary_operator: '+' | '-' ;
