@@ -1,4 +1,5 @@
-﻿using Antlr4.Runtime.Misc;
+﻿using Antlr4.Runtime;
+using Antlr4.Runtime.Misc;
 using Group4_Interpreter.Interpret;
 using System;
 using System.Collections.Generic;
@@ -100,7 +101,7 @@ namespace Group4_Interpreter.Visit
         public override object? VisitAssignmentStatement([NotNull] CodeParser.AssignmentStatementContext context)
         {
             var identifier = context.IDENTIFIERS();
-            foreach(var a in identifier)
+            foreach (var a in identifier)
             {
                 var expression = context.expression().Accept(this);
                 Variables[a.GetText()] = expression;
@@ -154,12 +155,8 @@ namespace Group4_Interpreter.Visit
                 case "BOOL":
                     return typeof(bool);
                 default:
-                    throw new Exception ("Invalid DATA TYPE!");
+                    throw new Exception("Invalid DATA TYPE!");
             }
-        }
-        public override object VisitIfCondition([NotNull] CodeParser.IfConditionContext context)
-        {
-            return base.VisitIfCondition(context);
         }
 
         public override object? VisitDisplay([NotNull] CodeParser.DisplayContext context)
@@ -545,8 +542,8 @@ namespace Group4_Interpreter.Visit
         }
         public override object? VisitLogicalExpression([NotNull] CodeParser.LogicalExpressionContext context)
         {
-            var leftValue = Visit(context.expression(0)); 
-            var rightValue = Visit(context.expression(1));
+            var leftValue = Visit(context.expression(0));
+            var rightValue = Visit(context.expression(1));
 
             if (leftValue == null || rightValue == null)
             {
@@ -554,7 +551,7 @@ namespace Group4_Interpreter.Visit
             }
             else if (leftValue is bool leftBoolValue && rightValue is bool rightBoolValue)
             {
-                if (context.logicalOperators().GetText() == "AND")
+                if (context.logicalOperators().GetText() == "AND")
                 {
                     return leftBoolValue && rightBoolValue;
                 }
@@ -575,6 +572,32 @@ namespace Group4_Interpreter.Visit
             {
                 throw new InvalidOperationException("Invalid operand types: " + leftValue?.GetType().Name + " and " + rightValue?.GetType().Name);
             }
+        }
+
+        public override object? VisitIfStatement([NotNull] CodeParser.IfStatementContext context)
+        {
+            CodeParser.ConditionBlockContext[] conditions = context.conditionBlock();
+
+            bool evaluatedBlock = false;
+
+            foreach (CodeParser.ConditionBlockContext condition in conditions)
+            {
+                var evaluated = Visit(condition.expression());
+
+                if (bool.Parse(evaluated.ToString()!) == true)
+                {
+                    evaluatedBlock = true;
+                    Visit(condition.ifBlock());
+                    break;
+                }
+            }
+
+            if (!evaluatedBlock && context.ifBlock() != null)
+            {
+                Visit(context.ifBlock());
+            }
+
+            return new object();
         }
     }
 }
