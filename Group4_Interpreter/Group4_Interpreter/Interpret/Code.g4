@@ -8,8 +8,8 @@ programLines
     | assignmentOperator
     | assignmentStatement
 	| methodCall
-    | ifCondition 
-    | whileLoop
+    | ifStatement
+    | whileStatement
     | display
     | scanFunction
 	| COMMENTS
@@ -20,20 +20,24 @@ variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
 assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
 assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE? ;
 
-beginBlocks: (BEGIN_IF | BEGIN_WHILE);
-
 BEGIN_CODE: 'BEGIN CODE' ;
 END_CODE: 'END CODE' ;
 
-BEGIN_IF: 'BEGIN' 'IF' ;
-END_IF: 'END' 'IF' ;
-ifCondition: 'IF' '('expression')' BEGIN_IF beginBlocks END_IF elseIfCondition? ;
-elseIfCondition: 'ELSE' (BEGIN_IF beginBlocks END_IF) | ifCondition ;
+BEGIN_IF: 'BEGIN IF' ;
+END_IF: 'END IF';
+block: programLines NEWLINE*;
+ifStatement: IF conditionBlock (ELSE IF conditionBlock)* (ELSE ifBlock)?;
+conditionBlock: expression NEWLINE* ifBlock;
+ifBlock: NEWLINE* BEGIN_IF NEWLINE* block END_IF NEWLINE*;
 
-WHILE: 'WHILE' ;
-BEGIN_WHILE: 'BEGIN' 'WHILE' ;
-END_WHILE: 'END' 'WHILE' ;
-whileLoop: WHILE '(' expression ')' BEGIN_WHILE beginBlocks* END_WHILE ;
+ELSE: 'ELSE';
+IF: 'IF';
+WHILE: 'WHILE';
+
+BEGIN_WHILE: 'BEGIN WHILE' ;
+END_WHILE: 'END WHILE' ;
+whileStatement: WHILE expression whileBlock;
+whileBlock: NEWLINE* BEGIN_WHILE NEWLINE* block NEWLINE* END_WHILE NEWLINE*;
 
 programDataTypes: INT | FLOAT | BOOL | CHAR | STRING ;
 INT: 'INT' ;
