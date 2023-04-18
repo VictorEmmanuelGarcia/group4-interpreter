@@ -4,7 +4,6 @@ programStructure: NEWLINE? BEGIN_CODE NEWLINE? programLines* NEWLINE? END_CODE E
 
 programLines
     : variableInitialization
-	| variable
     | assignmentOperator
     | assignmentStatement
 	| methodCall
@@ -16,7 +15,6 @@ programLines
     ;
 
 variableInitialization: NEWLINE? programDataTypes IDENTIFIERS ('=' expression)? (',' IDENTIFIERS ('=' expression)?)*;
-variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
 assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
 assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE? ;
 
@@ -54,20 +52,20 @@ BOOLEAN_VALUES: 'TRUE' | 'FALSE' ;
 STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
 
 expression
-    : constantValues                                            #constantValueExpression
-    | IDENTIFIERS                                               #identifierExpression
-    | COMMENTS                                                  #commentExpression
-    | methodCall                                                #methodCallExpression
-    | '(' expression ')'                                        #parenthesisExpression
-    | 'NOT' expression                                          #notExpression
-    | unary_operator expression                                 #unaryExpression
+    : unary_operator expression                                 #unaryExpression
     | expression multDivModOperators expression                 #multDivModExpression
     | expression addSubOperators expression                     #addSubExpression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
+	| '(' expression ')'                                        #parenthesisExpression
+    | 'NOT' expression                                          #notExpression
     | ESCAPECODE                                                #escapeCodeExpression
     | NEWLINE                                                   #newLineExpression
     | expression concatVariable expression                      #concatExpression
+	| constantValues                                            #constantValueExpression
+    | IDENTIFIERS                                               #identifierExpression
+    | COMMENTS                                                  #commentExpression
+    | methodCall                                                #methodCallExpression
     ; 
 
 multDivModOperators: '*' | '/' | '%' ;
