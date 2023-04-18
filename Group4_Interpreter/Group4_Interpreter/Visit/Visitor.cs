@@ -72,25 +72,6 @@ namespace Group4_Interpreter.Visit
             return null;
         }
 
-        public override object? VisitVariable([NotNull] CodeParser.VariableContext context)
-        {
-            var dataTypeObj = VisitProgramDataTypes(context.programDataTypes());
-            if (dataTypeObj is null)
-            {
-                Console.Write($"Invalid data type '{dataTypeObj}'");
-                Environment.Exit(1);
-            }
-
-            var dataType = (Type)dataTypeObj;
-            var variableName = context.IDENTIFIERS().GetText();
-            var variableValue = VisitExpression(context.expression());
-
-            var varValueWithType = Convert.ChangeType(variableValue, dataType);
-            Variables[variableName] = varValueWithType;
-
-            return varValueWithType;
-        }
-
         public override object? VisitAssignmentOperator([NotNull] CodeParser.AssignmentOperatorContext context)
         {
             var variableName = context.IDENTIFIERS().GetText();
