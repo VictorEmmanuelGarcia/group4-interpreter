@@ -1,6 +1,6 @@
 ﻿grammar Code;
 
-programStructure: NEWLINE? BEGIN_CODE NEWLINE? programLines* NEWLINE? END_CODE EOF;
+programStructure: NEWLINE* BEGIN_CODE NEWLINE* programLines* NEWLINE* END_CODE EOF;
 
 programLines
     : variableInitialization
@@ -14,9 +14,9 @@ programLines
 	| COMMENTS
     ;
 
-variableInitialization: NEWLINE? programDataTypes IDENTIFIERS ('=' expression)? (',' IDENTIFIERS ('=' expression)?)*;
-assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
-assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE? ;
+variableInitialization: NEWLINE* programDataTypes IDENTIFIERS ('=' expression)? (',' IDENTIFIERS ('=' expression)?)*;
+assignmentOperator: IDENTIFIERS '=' expression NEWLINE*;
+assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE* ;
 
 BEGIN_CODE: 'BEGIN CODE' ;
 END_CODE: 'END CODE' ;
@@ -81,7 +81,7 @@ unary_operator: '+' | '-' ;
 
 // for DISPLAY: and SCAN:
 methodCall: IDENTIFIERS ':' (expression (',' expression)*)? ;
-display: NEWLINE? 'DISPLAY' ':' expression NEWLINE? ;
+display: NEWLINE* 'DISPLAY' ':' expression NEWLINE* ;
 
 // Not working
 SCAN: 'SCAN:';
