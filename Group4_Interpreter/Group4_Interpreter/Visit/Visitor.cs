@@ -580,5 +580,29 @@ namespace Group4_Interpreter.Visit
 
             return new object();
         }
+        public override object VisitWhileStatement([NotNull] CodeParser.WhileStatementContext context)
+        {
+            var value = Visit(context.expression());
+            int currIterations = 0;
+            int maxIterations = 1000;
+
+            while (bool.Parse(value.ToString()!) == true)
+            {
+                currIterations++;
+                if (currIterations > maxIterations)
+                {
+                    Console.WriteLine();
+                    Console.Write("Possible infinite loop detected");
+                    Environment.Exit(400);
+                }
+
+                Visit(context.whileBlock());
+
+                value = Visit(context.expression());
+            }
+
+            return new object();
+        }
+
     }
 }
