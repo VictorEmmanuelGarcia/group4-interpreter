@@ -11,7 +11,8 @@ namespace Interpreter.ErrorHandle
     {
         public override void SyntaxError(IRecognizer recognizer, IToken offendingSymbol, int line, int charPositionInLine, string msg, RecognitionException e)
         {
-            throw new Exception($"Syntax error at line {line}:{charPositionInLine} {msg}");
+            Console.WriteLine($"Syntax error at line {line}:{charPositionInLine} {msg}");
+            Environment.Exit(400);
         }
     }
 }
