@@ -117,8 +117,17 @@ namespace Group4_Interpreter.Visit
 
         public override object? VisitIdentifierExpression([NotNull] CodeParser.IdentifierExpressionContext context)
         {
-            var varName = context.IDENTIFIERS().GetText();
-            return Variables[varName];
+            try
+            { 
+            // Try to get the variable from the dictionary
+            return Variables[context.IDENTIFIERS().GetText()];
+            }
+            catch (Exception e)  // If the variable is not in the dictionary, throw an error
+            {
+                Console.Write(e.Message);
+                Environment.Exit(400);
+                return null;
+            }
         }
 
         public override object? VisitProgramDataTypes([NotNull] CodeParser.ProgramDataTypesContext context)
