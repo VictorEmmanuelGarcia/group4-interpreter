@@ -592,7 +592,7 @@ namespace Group4_Interpreter.Visit
                 if (currIterations > maxIterations)
                 {
                     Console.WriteLine();
-                    Console.Write("Possible infinite loop detected");
+                    Console.Write("Possible infinite loop detected!");
                     Environment.Exit(400);
                 }
 
