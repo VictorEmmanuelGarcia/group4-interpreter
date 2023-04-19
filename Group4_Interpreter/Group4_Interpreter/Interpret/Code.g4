@@ -1,10 +1,9 @@
 ﻿grammar Code;
 
-programStructure: NEWLINE* BEGIN_CODE NEWLINE* programLines* NEWLINE* END_CODE EOF;
+programStructure: NEWLINE* BEGIN_CODE NEWLINE* variableInitialization* programLines* NEWLINE* END_CODE EOF;
 
 programLines
-    : variableInitialization
-    | assignmentOperator
+    : assignmentOperator
     | assignmentStatement
     | ifStatement
     | whileStatement
