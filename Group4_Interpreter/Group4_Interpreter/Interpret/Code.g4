@@ -46,7 +46,7 @@ constantValues: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUE
 INTEGER_VALUES: [0-9]+ ;
 FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
 CHARACTER_VALUES: '\'' ~[\r\n\'] '\'' ;
-BOOLEAN_VALUES: 'TRUE' | 'FALSE' ;
+BOOLEAN_VALUES: '"TRUE"' | '"FALSE"' ;
 STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
 
 expression
