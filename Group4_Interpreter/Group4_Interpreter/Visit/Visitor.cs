@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace Group4_Interpreter.Visit
     public class Visitor : CodeBaseVisitor<object?>
     {
         public Dictionary<string, object?> Variables { get; } = new Dictionary<string, object?>();
+        public Dictionary<string, string> DataTypes { get; } = new Dictionary<string, string>();
         public override object? VisitVariableInitialization(CodeParser.VariableInitializationContext context)
         {
             // Map string type names to corresponding Type objects
@@ -68,6 +70,7 @@ namespace Group4_Interpreter.Visit
                 {
                     Variables[varNames[x].GetText()] = null;
                 }
+                DataTypes[varNames[x].GetText()] = typeStr;
             }
             return null;
         }
@@ -106,7 +109,19 @@ namespace Group4_Interpreter.Visit
             }
             if (context.constantValues().BOOLEAN_VALUES() is { } d)
             {
-                return bool.Parse(d.GetText());
+                try
+                {
+                    if (bool.TryParse(d.GetText().Trim('"').ToUpper(), out bool result))
+                    {
+                        return result;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Console.Write(ex.Message);
+                    Environment.Exit(400);
+                    return null;
+                }
             }
             if (context.constantValues().STRING_VALUES() is { } e)
             {
@@ -209,32 +224,92 @@ namespace Group4_Interpreter.Visit
         {
             foreach (var id in context.IDENTIFIERS().Select(x => x.GetText()).ToArray())
             {
-                Console.Write($"Input the corresponding value for the declared variable {id}: ");
+                Console.Write($"Please enter the corresponding value for the declared variable {id}: ");
                 var input = Console.ReadLine();
 
-                if (int.TryParse(input, out int intValue))
+                var dataType = DataTypes[id];
+                try
                 {
-                    Variables[id] = intValue;
+                    switch (dataType)
+                    {
+                        case "INT":
+                            if (int.TryParse(input, out var intValue))
+                            {
+                                Variables[id] = intValue;
+                            }
+                            else
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            break;
+                        case "FLOAT":
+                            if (int.TryParse(input, out _))
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            else if (bool.TryParse(input, out _))
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            else if (char.TryParse(input, out _))
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            else if (float.TryParse(input, out var floatValue))
+                            {
+                                Variables[id] = floatValue;
+                            }
+                            else
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            break;
+                        case "BOOL":
+                            if (bool.TryParse(input, out var boolValue))
+                            {
+                                Variables[id] = boolValue;
+                            }
+                            else
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            break;
+                        case "CHAR":
+                            if (char.TryParse(input, out var charValue))
+                            {
+                                Variables[id] = charValue;
+                            }
+                            else
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            break;
+                        case "STRING":
+                            if (int.TryParse(input, out _))
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            else if (float.TryParse(input, out _))
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            else if (bool.TryParse(input, out _))
+                            {
+                                throw new ArgumentException($"\nError Message: Input value for variable {id} is not a valid {dataType.ToUpper()} value.\n");
+                            }
+                            else
+                            {
+                                Variables[id] = input ?? "";
+                            }
+                            break;
+                        default:
+                            throw new ArgumentException($"\nError Message: Invalid data type {dataType} for variable {id}.\n");
+                    }
                 }
-                else if (float.TryParse(input, out float floatValue))
+                catch (ArgumentException ex)
                 {
-                    Variables[id] = floatValue;
-                }
-                else if (char.TryParse(input, out char charValue))
-                {
-                    Variables[id] = charValue;
-                }
-                else if (bool.TryParse(input, out bool boolValue))
-                {
-                    Variables[id] = boolValue;
-                }
-                else if (input != null)
-                {
-                    Variables[id] = input;
-                }
-                else
-                {
-                    throw new ArgumentException($"Invalid input for variable {id}");
+                    Console.WriteLine(ex.Message);
+                    return null; // Exit the method if the input value is not valid
                 }
             }
             return null;
