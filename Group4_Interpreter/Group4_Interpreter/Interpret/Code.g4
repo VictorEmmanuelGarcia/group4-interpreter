@@ -6,7 +6,6 @@ programLines
     : variableInitialization
     | assignmentOperator
     | assignmentStatement
-	| methodCall
     | ifStatement
     | whileStatement
     | display
@@ -26,7 +25,7 @@ END_IF: 'END IF';
 block: programLines NEWLINE*;
 ifStatement: IF conditionBlock (ELSE IF conditionBlock)* (ELSE ifBlock)?;
 conditionBlock: expression NEWLINE* ifBlock;
-ifBlock: NEWLINE* BEGIN_IF NEWLINE* block END_IF NEWLINE*;
+ifBlock: NEWLINE* BEGIN_IF NEWLINE* block* END_IF NEWLINE*;
 
 ELSE: 'ELSE';
 IF: 'IF';
@@ -35,7 +34,7 @@ WHILE: 'WHILE';
 BEGIN_WHILE: 'BEGIN WHILE' ;
 END_WHILE: 'END WHILE' ;
 whileStatement: WHILE expression whileBlock;
-whileBlock: NEWLINE* BEGIN_WHILE NEWLINE* block NEWLINE* END_WHILE NEWLINE*;
+whileBlock: NEWLINE* BEGIN_WHILE NEWLINE* block* NEWLINE* END_WHILE NEWLINE*;
 
 programDataTypes: INT | FLOAT | BOOL | CHAR | STRING ;
 INT: 'INT' ;
