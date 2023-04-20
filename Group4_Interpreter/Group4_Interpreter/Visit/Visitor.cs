@@ -109,19 +109,7 @@ namespace Group4_Interpreter.Visit
             }
             if (context.constantValues().BOOLEAN_VALUES() is { } d)
             {
-                try
-                {
-                    if (bool.TryParse(d.GetText().Trim('"').ToUpper(), out bool result))
-                    {
-                        return result;
-                    }
-                }
-                catch(Exception ex)
-                {
-                    Console.Write(ex.Message);
-                    Environment.Exit(400);
-                    return null;
-                }
+                return d.GetText().Equals("\"TRUE\"");        
             }
             if (context.constantValues().STRING_VALUES() is { } e)
             {
