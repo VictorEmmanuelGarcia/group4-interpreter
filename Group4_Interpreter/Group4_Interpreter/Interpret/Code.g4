@@ -1,39 +1,39 @@
 ﻿grammar Code;
 
-programStructure: BEGIN_CODE NEWLINE programLines* NEWLINE END_CODE ;
+programStructure: NEWLINE* BEGIN_CODE NEWLINE* variableInitialization* programLines* NEWLINE* END_CODE EOF;
 
 programLines
-    : variableInitialization
-	| variable
-    | assignmentOperator
+    : assignmentOperator
     | assignmentStatement
-	| methodCall
-    | ifCondition 
-    | whileLoop
+    | ifStatement
+    | whileStatement
     | display
     | scanFunction
 	| COMMENTS
     ;
 
-variableInitialization: programDataTypes IDENTIFIERS (',' IDENTIFIERS)* ('=' expression)? NEWLINE?;
-variable: programDataTypes IDENTIFIERS ('=' expression)? NEWLINE?;
-assignmentOperator: IDENTIFIERS '=' expression NEWLINE?;
-assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE? ;
-
-beginBlocks: (BEGIN_IF | BEGIN_WHILE);
+variableInitialization: NEWLINE* programDataTypes IDENTIFIERS ('=' expression)? (',' IDENTIFIERS ('=' expression)?)*;
+assignmentOperator: IDENTIFIERS '=' expression NEWLINE*;
+assignmentStatement: IDENTIFIERS ('=' IDENTIFIERS)* '=' expression NEWLINE* ;
 
 BEGIN_CODE: 'BEGIN CODE' ;
 END_CODE: 'END CODE' ;
 
-BEGIN_IF: 'BEGIN' 'IF' ;
-END_IF: 'END' 'IF' ;
-ifCondition: 'IF' '('expression')' BEGIN_IF beginBlocks END_IF elseIfCondition? ;
-elseIfCondition: 'ELSE' (BEGIN_IF beginBlocks END_IF) | ifCondition ;
+BEGIN_IF: 'BEGIN IF' ;
+END_IF: 'END IF';
+block: programLines NEWLINE*;
+ifStatement: IF conditionBlock (ELSE IF conditionBlock)* (ELSE ifBlock)?;
+conditionBlock: expression NEWLINE* ifBlock;
+ifBlock: NEWLINE* BEGIN_IF NEWLINE* block* END_IF NEWLINE*;
 
-WHILE: 'WHILE' ;
-BEGIN_WHILE: 'BEGIN' 'WHILE' ;
-END_WHILE: 'END' 'WHILE' ;
-whileLoop: WHILE '(' expression ')' BEGIN_WHILE beginBlocks* END_WHILE ;
+ELSE: 'ELSE';
+IF: 'IF';
+WHILE: 'WHILE';
+
+BEGIN_WHILE: 'BEGIN WHILE' ;
+END_WHILE: 'END WHILE' ;
+whileStatement: WHILE expression whileBlock;
+whileBlock: NEWLINE* BEGIN_WHILE NEWLINE* block* NEWLINE* END_WHILE NEWLINE*;
 
 programDataTypes: INT | FLOAT | BOOL | CHAR | STRING ;
 INT: 'INT' ;
@@ -46,26 +46,28 @@ constantValues: INTEGER_VALUES | FLOAT_VALUES | CHARACTER_VALUES | BOOLEAN_VALUE
 INTEGER_VALUES: [0-9]+ ;
 FLOAT_VALUES: [0-9]+ '.' [0-9]+ ;
 CHARACTER_VALUES: '\'' ~[\r\n\'] '\'' ;
-BOOLEAN_VALUES: 'TRUE' | 'FALSE' ;
+BOOLEAN_VALUES: '"TRUE"' | '"FALSE"' ;
 STRING_VALUES: ('"' ~'"'* '"') | ('\'' ~'\''* '\'') ;
 
 expression
-    : constantValues                                            #constantValueExpression
-    | IDENTIFIERS                                               #identifierExpression
-    | COMMENTS                                                  #commentExpression
-    | methodCall                                                #methodCallExpression
-    | '(' expression ')'                                        #parenthesisExpression
-    | 'NOT' expression                                          #notExpression
-    | unary_operator expression                                 #unaryExpression
+    : unary_operator expression                                 #unaryExpression
     | expression multDivModOperators expression                 #multDivModExpression
+    | expression addSubOperators expression                     #addSubExpression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
+	| '(' expression ')'                                        #parenthesisExpression
+    | 'NOT' expression                                          #notExpression
     | ESCAPECODE                                                #escapeCodeExpression
     | NEWLINE                                                   #newLineExpression
     | expression concatVariable expression                      #concatExpression
+	| constantValues                                            #constantValueExpression
+    | IDENTIFIERS                                               #identifierExpression
+    | COMMENTS                                                  #commentExpression
+    | methodCall                                                #methodCallExpression
     ; 
 
 multDivModOperators: '*' | '/' | '%' ;
+addSubOperators: '+' | '-' ;
 comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
@@ -77,7 +79,7 @@ unary_operator: '+' | '-' ;
 
 // for DISPLAY: and SCAN:
 methodCall: IDENTIFIERS ':' (expression (',' expression)*)? ;
-display: NEWLINE? 'DISPLAY' ':' expression NEWLINE? ;
+display: NEWLINE* 'DISPLAY' ':' expression NEWLINE* ;
 
 // Not working
 SCAN: 'SCAN:';
