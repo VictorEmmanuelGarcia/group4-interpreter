@@ -74,7 +74,6 @@ namespace Group4_Interpreter.Visit
             }
             return null;
         }
-
         public override object? VisitAssignmentOperator([NotNull] CodeParser.AssignmentOperatorContext context)
         {
             var variableName = context.IDENTIFIERS().GetText();
@@ -109,7 +108,7 @@ namespace Group4_Interpreter.Visit
             }
             if (context.constantValues().BOOLEAN_VALUES() is { } d)
             {
-                return d.GetText().Equals("\"TRUE\"");        
+                return d.GetText().Equals("\"TRUE\"");
             }
             if (context.constantValues().STRING_VALUES() is { } e)
             {
@@ -121,9 +120,9 @@ namespace Group4_Interpreter.Visit
         public override object? VisitIdentifierExpression([NotNull] CodeParser.IdentifierExpressionContext context)
         {
             try
-            { 
-            // Try to get the variable from the dictionary
-            return Variables[context.IDENTIFIERS().GetText()];
+            {
+                // Try to get the variable from the dictionary
+                return Variables[context.IDENTIFIERS().GetText()];
             }
             catch (Exception e)  // If the variable is not in the dictionary, throw an error
             {
@@ -141,23 +140,17 @@ namespace Group4_Interpreter.Visit
                     return typeof(int);
                 case "FLOAT":
                     return typeof(float);
-                case "CHAR":
-                    return typeof(char);
                 case "STRING":
                     return typeof(string);
+                case "CHAR":
+                    return typeof(char);
                 case "BOOL":
                     return typeof(bool);
                 default:
                     throw new Exception("Invalid DATA TYPE!");
             }
         }
-        public override object VisitIfCondition([NotNull] CodeParser.IfConditionContext context)
-        {
-            return base.VisitIfCondition(context);
-        }
 
-            return null;
-        }
         public override object? VisitDisplay([NotNull] CodeParser.DisplayContext context)
         {
             var exp = Visit(context.expression());
@@ -632,7 +625,32 @@ namespace Group4_Interpreter.Visit
                 throw new InvalidOperationException("Invalid operand types: " + leftValue?.GetType().Name + " and " + rightValue?.GetType().Name);
             }
         }
+        public override object? VisitSwitchstatement([NotNull] CodeParser.SwitchstatementContext context)
+        {
+            // Get the expression in the switch statement
+            var expression = Visit(context.expression());
 
+            // Visit each case block
+            foreach (var caseBlockContext in context.caseBlock())
+            {
+                var caseExpression = Visit(caseBlockContext.expression());
+                if (caseExpression.Equals(expression))
+                {
+                    Visit(caseBlockContext);
+                    return null;
+                }
+                    
+            }
+
+            // Check if there is a default block
+            var defaultBlockContext = context.defaultBlock();
+            if (defaultBlockContext != null)
+            {
+                Visit(defaultBlockContext);
+            }
+
+            return null;
+        }
         public override object? VisitIfStatement([NotNull] CodeParser.IfStatementContext context)
         {
             CodeParser.ConditionBlockContext[] conditions = context.conditionBlock();
