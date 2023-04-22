@@ -634,6 +634,15 @@ namespace Group4_Interpreter.Visit
             foreach (var caseBlockContext in context.caseBlock())
             {
                 var caseExpression = Visit(caseBlockContext.expression());
+
+                if(!caseExpression.GetType().Equals(expression.GetType()))
+                {
+                    Console.WriteLine("The switch expression is " + expression.GetType().Name.ToUpper() +
+                        " and the case is " + caseExpression.GetType().Name.ToUpper()+".");
+                    Console.WriteLine("The switch case expressions must have the same data type.");
+                    return null;
+                }
+
                 if (caseExpression.Equals(expression))
                 {
                     Visit(caseBlockContext);
