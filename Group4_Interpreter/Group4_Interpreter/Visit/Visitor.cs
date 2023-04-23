@@ -59,8 +59,16 @@ namespace Group4_Interpreter.Visit
                         var convertedValue = expr;
                         if (expr != null && type != expr.GetType())
                         {
-                            convertedValue = TypeDescriptor.GetConverter(type).ConvertFrom(expr);
+                            try
+                            {
+                                convertedValue = TypeDescriptor.GetConverter(type).ConvertFrom(expr);
+                            }
+                            catch(Exception e)
+                            {
+                                Console.WriteLine("Cannot convert "+ expr.GetType().Name + " to " + typeStr.GetType().Name + ".");
+                            }
                         }
+                        
 
                         Variables[varNames[x].GetText()] = convertedValue;
                         expressionCounter++;
@@ -638,7 +646,7 @@ namespace Group4_Interpreter.Visit
                 if(!caseExpression.GetType().Equals(expression.GetType()))
                 {
                     Console.WriteLine("The switch expression is " + expression.GetType().Name.ToUpper() +
-                        " and the case is " + caseExpression.GetType().Name.ToUpper()+".");
+                        " and the case expression is " + caseExpression.GetType().Name.ToUpper()+".");
                     Console.WriteLine("The switch case expressions must have the same data type.");
                     return null;
                 }
