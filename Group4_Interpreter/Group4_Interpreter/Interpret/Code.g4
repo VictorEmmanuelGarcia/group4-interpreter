@@ -7,6 +7,7 @@ programLines
     | assignmentStatement
     | ifStatement
     | whileStatement
+    | switchstatement
     | display
     | scanFunction
 	| COMMENTS
@@ -34,6 +35,13 @@ BEGIN_WHILE: 'BEGIN WHILE' ;
 END_WHILE: 'END WHILE' ;
 whileStatement: WHILE expression whileBlock;
 whileBlock: NEWLINE* BEGIN_WHILE NEWLINE* block* NEWLINE* END_WHILE NEWLINE*;
+
+SWITCH: 'SWITCH';
+CASE: 'CASE';
+DEFAULT: 'DEFAULT';
+switchstatement: SWITCH '(' expression ')' NEWLINE* '{' NEWLINE* caseBlock (caseBlock)* NEWLINE* (defaultBlock)? '}' NEWLINE*;
+caseBlock: NEWLINE* CASE expression ':' NEWLINE* block* NEWLINE*;
+defaultBlock: NEWLINE* DEFAULT ':' block* NEWLINE*;
 
 programDataTypes: INT | FLOAT | BOOL | CHAR | STRING ;
 INT: 'INT' ;
