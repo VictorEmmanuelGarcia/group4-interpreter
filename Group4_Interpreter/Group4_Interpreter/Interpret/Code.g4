@@ -64,7 +64,7 @@ expression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
 	| '(' expression ')'                                        #parenthesisExpression
-    | 'NOT' expression                                          #notExpression
+    | notOperator expression                                    #notExpression
     | ESCAPECODE                                                #escapeCodeExpression
     | NEWLINE                                                   #newLineExpression
     | expression concatVariable expression                      #concatExpression
@@ -80,7 +80,7 @@ comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
 ESCAPECODE: '['.']' ;
-
+notOperator: 'NOT' ;
 LOGICAL_OPERATORS: 'AND' | 'OR' | 'NOT' ;
 
 unary_operator: '+' | '-' ;
