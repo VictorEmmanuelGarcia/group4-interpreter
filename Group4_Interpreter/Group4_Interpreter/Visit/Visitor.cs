@@ -716,6 +716,18 @@ namespace Group4_Interpreter.Visit
 
             return new object();
         }
+        public override object? VisitNotExpression(CodeParser.NotExpressionContext context)
+        {
+            var value = (bool?)Visit(context.expression());
+            if (value != null)
+            {
+                return !value;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
     }
 }
