@@ -17,8 +17,8 @@ The interpreter uses ANTLR to generate a lexer and parser based on a grammar spe
 1. Clone the repository.
 2. Open the solution in Visual Studio.
 3. Build the solution.
+5. Input code in test.code
 4. Run the program.
-5. Enter  when prompted by the console.
 
 ## Examples:
 
