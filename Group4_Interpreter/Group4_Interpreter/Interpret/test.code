@@ -1,4 +1,5 @@
 BEGIN CODE
-INT x = 5
-DISPLAY: x
+INT a = -5
+a = -a
+DISPLAY: a
 END CODE
