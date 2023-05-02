@@ -59,8 +59,16 @@ namespace Group4_Interpreter.Visit
                         var convertedValue = expr;
                         if (expr != null && type != expr.GetType())
                         {
-                            convertedValue = TypeDescriptor.GetConverter(type).ConvertFrom(expr);
+                            try
+                            {
+                                convertedValue = TypeDescriptor.GetConverter(type).ConvertFrom(expr);
+                            }
+                            catch(Exception e)
+                            {
+                                Console.WriteLine("Cannot convert "+ expr.GetType().Name + " to " + typeStr.GetType().Name + ".");
+                            }
                         }
+                        
 
                         Variables[varNames[x].GetText()] = convertedValue;
                         expressionCounter++;
@@ -74,7 +82,6 @@ namespace Group4_Interpreter.Visit
             }
             return null;
         }
-
         public override object? VisitAssignmentOperator([NotNull] CodeParser.AssignmentOperatorContext context)
         {
             var variableName = context.IDENTIFIERS().GetText();
@@ -109,7 +116,7 @@ namespace Group4_Interpreter.Visit
             }
             if (context.constantValues().BOOLEAN_VALUES() is { } d)
             {
-                return d.GetText().Equals("\"TRUE\"");        
+                return d.GetText().Equals("\"TRUE\"");
             }
             if (context.constantValues().STRING_VALUES() is { } e)
             {
@@ -121,9 +128,9 @@ namespace Group4_Interpreter.Visit
         public override object? VisitIdentifierExpression([NotNull] CodeParser.IdentifierExpressionContext context)
         {
             try
-            { 
-            // Try to get the variable from the dictionary
-            return Variables[context.IDENTIFIERS().GetText()];
+            {
+                // Try to get the variable from the dictionary
+                return Variables[context.IDENTIFIERS().GetText()];
             }
             catch (Exception e)  // If the variable is not in the dictionary, throw an error
             {
@@ -626,7 +633,41 @@ namespace Group4_Interpreter.Visit
                 throw new InvalidOperationException("Invalid operand types: " + leftValue?.GetType().Name + " and " + rightValue?.GetType().Name);
             }
         }
+        public override object? VisitSwitchstatement([NotNull] CodeParser.SwitchstatementContext context)
+        {
+            // Get the expression in the switch statement
+            var expression = Visit(context.expression());
 
+            // Visit each case block
+            foreach (var caseBlockContext in context.caseBlock())
+            {
+                var caseExpression = Visit(caseBlockContext.expression());
+
+                if(!caseExpression.GetType().Equals(expression.GetType()))
+                {
+                    Console.WriteLine("The switch expression is " + expression.GetType().Name.ToUpper() +
+                        " and the case expression is " + caseExpression.GetType().Name.ToUpper()+".");
+                    Console.WriteLine("The switch case expressions must have the same data type.");
+                    return null;
+                }
+
+                if (caseExpression.Equals(expression))
+                {
+                    Visit(caseBlockContext);
+                    return null;
+                }
+                    
+            }
+
+            // Check if there is a default block
+            var defaultBlockContext = context.defaultBlock();
+            if (defaultBlockContext != null)
+            {
+                Visit(defaultBlockContext);
+            }
+
+            return null;
+        }
         public override object? VisitIfStatement([NotNull] CodeParser.IfStatementContext context)
         {
             CodeParser.ConditionBlockContext[] conditions = context.conditionBlock();
@@ -674,6 +715,18 @@ namespace Group4_Interpreter.Visit
             }
 
             return new object();
+        }
+        public override object? VisitNotExpression(CodeParser.NotExpressionContext context)
+        {
+            var value = (bool?)Visit(context.expression());
+            if (value != null)
+            {
+                return !value;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }

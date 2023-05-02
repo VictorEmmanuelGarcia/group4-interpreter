@@ -7,6 +7,7 @@ programLines
     | assignmentStatement
     | ifStatement
     | whileStatement
+    | switchstatement
     | display
     | scanFunction
 	| COMMENTS
@@ -35,6 +36,13 @@ END_WHILE: 'END WHILE' ;
 whileStatement: WHILE expression whileBlock;
 whileBlock: NEWLINE* BEGIN_WHILE NEWLINE* block* NEWLINE* END_WHILE NEWLINE*;
 
+SWITCH: 'SWITCH';
+CASE: 'CASE';
+DEFAULT: 'DEFAULT';
+switchstatement: SWITCH '(' expression ')' NEWLINE* '{' NEWLINE* caseBlock (caseBlock)* NEWLINE* (defaultBlock)? '}' NEWLINE*;
+caseBlock: NEWLINE* CASE expression ':' NEWLINE* block* NEWLINE*;
+defaultBlock: NEWLINE* DEFAULT ':' block* NEWLINE*;
+
 programDataTypes: INT | FLOAT | BOOL | CHAR | STRING ;
 INT: 'INT' ;
 FLOAT: 'FLOAT';
@@ -56,7 +64,7 @@ expression
     | expression comparisonOperators expression                 #comparisonExpression
     | expression logicalOperators expression                    #logicalExpression
 	| '(' expression ')'                                        #parenthesisExpression
-    | 'NOT' expression                                          #notExpression
+    | notOperator expression                                    #notExpression
     | ESCAPECODE                                                #escapeCodeExpression
     | NEWLINE                                                   #newLineExpression
     | expression concatVariable expression                      #concatExpression
@@ -72,7 +80,7 @@ comparisonOperators: '==' | '<>' | '>' | '<' | '>=' | '<='  ;
 concatVariable: '&' ;
 logicalOperators: LOGICAL_OPERATORS ;
 ESCAPECODE: '['.']' ;
-
+notOperator: 'NOT' ;
 LOGICAL_OPERATORS: 'AND' | 'OR' | 'NOT' ;
 
 unary_operator: '+' | '-' ;
