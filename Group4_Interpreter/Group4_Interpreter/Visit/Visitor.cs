@@ -471,6 +471,21 @@ namespace Group4_Interpreter.Visit
                     throw new Exception("Unknown operator");
                 }
             }
+            else if (leftValue is string leftString && rightValue is string rightString)
+            {
+                if (context.comparisonOperators().GetText() == "==")
+                {
+                    return leftString == rightString;
+                }
+                else if (context.comparisonOperators().GetText() == "<>")
+                {
+                    return leftString != rightString;
+                }
+                else
+                {
+                    throw new Exception("Unknown operator");
+                }
+            }
             else if (leftValue is int leftIntValue && rightValue is int rightIntValue)
             {
                 if (context.comparisonOperators().GetText() == ">")
