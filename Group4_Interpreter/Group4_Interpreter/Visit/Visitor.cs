@@ -456,6 +456,21 @@ namespace Group4_Interpreter.Visit
             {
                 throw new ArgumentNullException("Operand/s cannot be null.");
             }
+            else if (leftValue is char leftChar && rightValue is char rightChar)
+            {
+                if (context.comparisonOperators().GetText() == "==")
+                {
+                    return leftChar == rightChar;
+                }
+                else if (context.comparisonOperators().GetText() == "<>")
+                {
+                    return leftChar != rightChar;
+                }
+                else
+                {
+                    throw new Exception("Unknown operator");
+                }
+            }
             else if (leftValue is int leftIntValue && rightValue is int rightIntValue)
             {
                 if (context.comparisonOperators().GetText() == ">")
