@@ -468,7 +468,9 @@ namespace Group4_Interpreter.Visit
                 }
                 else
                 {
-                    throw new Exception("Unknown operator");
+                    Console.Write("Unknown Operator");
+                    Environment.Exit(400);
+                    return null;
                 }
             }
             else if (leftValue is string leftString && rightValue is string rightString)
@@ -483,7 +485,9 @@ namespace Group4_Interpreter.Visit
                 }
                 else
                 {
-                    throw new Exception("Unknown operator");
+                    Console.Write("Unknown Operator");
+                    Environment.Exit(400);
+                    return null;
                 }
             }
             else if (leftValue is int leftIntValue && rightValue is int rightIntValue)
@@ -514,7 +518,9 @@ namespace Group4_Interpreter.Visit
                 }
                 else
                 {
-                    throw new Exception("Unknown operator");
+                    Console.Write("Unknown Operator");
+                    Environment.Exit(400);
+                    return null;
                 }
             }
             else if (leftValue is float leftFloatValue && rightValue is float rightFloatValue)
@@ -545,7 +551,9 @@ namespace Group4_Interpreter.Visit
                 }
                 else
                 {
-                    throw new Exception("Unknown operator");
+                    Console.Write("Unknown Operator");
+                    Environment.Exit(400);
+                    return null;
                 }
             }
             else if (leftValue is int leftIntValue2 && rightValue is float rightFloatValue2)
@@ -576,7 +584,9 @@ namespace Group4_Interpreter.Visit
                 }
                 else
                 {
-                    throw new Exception("Unknown operator");
+                    Console.Write("Unknown Operator");
+                    Environment.Exit(400);
+                    return null;
                 }
             }
             else if (leftValue is float leftFloatValue2 && rightValue is int rightIntValue2)
@@ -607,7 +617,9 @@ namespace Group4_Interpreter.Visit
                 }
                 else
                 {
-                    throw new Exception("Unknown operator");
+                    Console.Write("Unknown Operator");
+                    Environment.Exit(400);
+                    return null;
                 }
             }
             else if (leftValue is bool leftBoolValue && rightValue is bool rightBoolValue)
@@ -622,7 +634,9 @@ namespace Group4_Interpreter.Visit
                 }
                 else
                 {
-                    throw new Exception("Unknown operator");
+                    Console.Write("Unknown Operator");
+                    Environment.Exit(400);
+                    return null;
                 }
             }
             else
@@ -655,7 +669,9 @@ namespace Group4_Interpreter.Visit
                 }
                 else
                 {
-                    throw new Exception("Unknown operator");
+                    Console.Write("Unknown Operator");
+                    Environment.Exit(400);
+                    return null;
                 }
             }
             else
